@@ -240,8 +240,12 @@
     justify-content: center;
   }
 
-  /* Allow injected SVGs to fill the container */
+  /* Allow injected SVGs to fill the container.
+     Fixture SVGs declare only a viewBox (no width/height), so give them a
+     definite width and let height derive from the viewBox aspect ratio —
+     otherwise an inline SVG can collapse to zero height. */
   .visual-container :global(svg) {
+    width: 100%;
     max-width: 100%;
     height: auto;
     display: block;
