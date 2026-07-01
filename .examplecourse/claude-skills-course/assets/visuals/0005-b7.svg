@@ -1,0 +1,26 @@
+<svg viewBox="0 0 800 450" xmlns="http://www.w3.org/2000/svg" font-family="ui-sans-serif, system-ui, sans-serif">
+  <rect width="800" height="450" fill="#0f1226"/>
+  <text x="40" y="56" fill="#e8e8f0" font-size="26" font-weight="700">Distribute through a marketplace</text>
+  <text x="40" y="86" fill="#8a90b8" font-size="16">A repo with marketplace.json others can add</text>
+
+  <g transform="translate(60,120)" font-size="14">
+    <rect width="680" height="120" rx="12" fill="#12152e" stroke="#7aa2f7" stroke-width="1.5"/>
+    <text x="20" y="34" fill="#7aa2f7" font-size="15" font-weight="700">Test locally, then share</text>
+    <text x="20" y="64" fill="#e8e8f0" font-family="ui-monospace, monospace" font-size="13">claude --plugin-dir ./my-plugin</text>
+    <text x="20" y="90" fill="#e8e8f0" font-family="ui-monospace, monospace" font-size="13">claude plugin validate</text>
+  </g>
+
+  <g transform="translate(60,255)" font-size="14">
+    <rect width="330" height="130" rx="12" fill="#1e2140" stroke="#6ee7b7" stroke-width="1.5"/>
+    <text x="20" y="32" fill="#6ee7b7" font-size="14" font-weight="700">claude-plugins-official</text>
+    <text x="20" y="60" fill="#8a90b8" font-size="12.5">curated by Anthropic</text>
+    <text x="20" y="82" fill="#8a90b8" font-size="12.5">auto-registered on first start</text>
+
+    <rect x="350" width="330" height="130" rx="12" fill="#1e2140" stroke="#c9a227" stroke-width="1.5"/>
+    <text x="370" y="32" fill="#c9a227" font-size="14" font-weight="700">claude-community</text>
+    <text x="370" y="60" fill="#8a90b8" font-size="12.5">public submissions after review</text>
+    <text x="370" y="82" fill="#8a90b8" font-size="12.5">pinned to a commit SHA</text>
+    <text x="370" y="104" fill="#8a90b8" font-size="12.5">private repos for team-only</text>
+  </g>
+  <text x="40" y="425" fill="#5b6091" font-size="12">Source: Create plugins (Claude Code Docs)</text>
+</svg>

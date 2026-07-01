@@ -1,0 +1,20 @@
+<svg viewBox="0 0 800 450" xmlns="http://www.w3.org/2000/svg" font-family="ui-sans-serif, system-ui, sans-serif">
+  <rect width="800" height="450" fill="#0f1226"/>
+  <text x="40" y="56" fill="#e8e8f0" font-size="26" font-weight="700">When to reach for a skill</text>
+  <text x="40" y="86" fill="#8a90b8" font-size="16">The signal: you keep repeating yourself</text>
+
+  <g transform="translate(60,120)" font-size="15">
+    <rect width="680" height="60" rx="10" fill="#1e2140" stroke="#6ee7b7" stroke-width="1.5"/>
+    <text x="20" y="36" fill="#e8e8f0">✓ You keep pasting the same instructions or checklist into chat</text>
+
+    <rect y="75" width="680" height="60" rx="10" fill="#1e2140" stroke="#6ee7b7" stroke-width="1.5"/>
+    <text x="20" y="111" fill="#e8e8f0">✓ A multi-step procedure recurs across tasks</text>
+
+    <rect y="150" width="680" height="60" rx="10" fill="#1e2140" stroke="#6ee7b7" stroke-width="1.5"/>
+    <text x="20" y="186" fill="#e8e8f0">✓ A CLAUDE.md section has become a procedure, not a fact</text>
+
+    <rect y="230" width="680" height="52" rx="10" fill="#12152e" stroke="#3a3f6b" stroke-width="1.5"/>
+    <text x="20" y="262" fill="#8a90b8">A skill's body loads only when used — long reference costs almost nothing until needed</text>
+  </g>
+  <text x="40" y="425" fill="#5b6091" font-size="12">Source: Extend Claude with skills (Claude Code Docs)</text>
+</svg>

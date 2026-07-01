@@ -1,0 +1,29 @@
+<svg viewBox="0 0 800 450" xmlns="http://www.w3.org/2000/svg" font-family="ui-sans-serif, system-ui, sans-serif">
+  <rect width="800" height="450" fill="#0f1226"/>
+  <text x="40" y="56" fill="#e8e8f0" font-size="26" font-weight="700">Level 3: resources and code</text>
+  <text x="40" y="86" fill="#8a90b8" font-size="16">Effectively unlimited — because it isn't in context until used</text>
+
+  <g transform="translate(60,120)" font-size="14">
+    <rect width="320" height="270" rx="12" fill="#12152e" stroke="#c9a227" stroke-width="1.5"/>
+    <text x="20" y="34" fill="#c9a227" font-size="15" font-weight="700">on the filesystem</text>
+    <text x="20" y="72" fill="#a9b0e0">FORMS.md</text>
+    <text x="20" y="100" fill="#a9b0e0">reference.md   (huge API docs)</text>
+    <text x="20" y="128" fill="#a9b0e0">schema.sql</text>
+    <text x="20" y="156" fill="#a9b0e0">scripts/fill_form.py</text>
+    <text x="20" y="210" fill="#8a90b8" font-size="13">Files: read only when referenced.</text>
+    <text x="20" y="234" fill="#8a90b8" font-size="13">Scripts: run via bash — code never</text>
+    <text x="20" y="254" fill="#8a90b8" font-size="13">enters context, only the output does.</text>
+  </g>
+
+  <g transform="translate(430,120)">
+    <rect width="310" height="270" rx="12" fill="#1e2140" stroke="#6ee7b7" stroke-width="2"/>
+    <text x="20" y="34" fill="#6ee7b7" font-size="15" font-weight="700">context window</text>
+    <rect x="20" y="55" width="270" height="34" rx="6" fill="#2a2e52"/>
+    <text x="34" y="77" fill="#e8e8f0" font-size="13">only the one file this task needs</text>
+    <rect x="20" y="99" width="270" height="34" rx="6" fill="#2a2e52"/>
+    <text x="34" y="121" fill="#e8e8f0" font-size="13">+ a script's short output</text>
+    <text x="20" y="175" fill="#8a90b8" font-size="13">The rest stays on disk at</text>
+    <text x="20" y="195" fill="#8a90b8" font-size="13">zero token cost.</text>
+  </g>
+  <text x="40" y="425" fill="#5b6091" font-size="12">Source: Agent Skills Overview · Anthropic Engineering</text>
+</svg>

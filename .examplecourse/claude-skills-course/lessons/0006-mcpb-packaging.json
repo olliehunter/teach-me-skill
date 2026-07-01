@@ -1,0 +1,254 @@
+{
+  "schema_version": "1.0",
+  "lesson_id": "0006",
+  "slug": "mcpb-packaging",
+  "title": "MCPB: Packaging Local MCP Servers",
+  "mission_ref": "MISSION.md",
+  "objective": "Understand MCPB bundles: why they exist, the manifest.json, server types, user_config, the mcpb CLI, the governance move to the MCP project, and how MCPB relates to Skills and Plugins.",
+  "prerequisites": [
+    "0005"
+  ],
+  "estimated_seconds": 300,
+  "voice": {
+    "engine": "kokoro",
+    "lang_code": "a",
+    "voice": "af_heart",
+    "speed": 1.0
+  },
+  "sources": [
+    {
+      "id": "s1",
+      "title": "Agent Skills — Overview (Claude Platform Docs)",
+      "url": "https://platform.claude.com/docs/en/agents-and-tools/agent-skills/overview",
+      "excerpt_ref": "sources/s1.md",
+      "accessed": "2026-07-01",
+      "tier": 1,
+      "trust_rationale": "Anthropic's canonical product documentation for Agent Skills."
+    },
+    {
+      "id": "s6",
+      "title": "Create plugins (Claude Code Docs)",
+      "url": "https://code.claude.com/docs/en/plugins",
+      "excerpt_ref": "sources/s6.md",
+      "accessed": "2026-07-01",
+      "tier": 1,
+      "trust_rationale": "Official Claude Code plugins documentation."
+    },
+    {
+      "id": "s7",
+      "title": "MCPB Manifest.json Spec (modelcontextprotocol/mcpb)",
+      "url": "https://github.com/modelcontextprotocol/mcpb/blob/main/MANIFEST.md",
+      "excerpt_ref": "sources/s7.md",
+      "accessed": "2026-07-01",
+      "tier": 1,
+      "trust_rationale": "The authoritative MCPB specification within the MCP project."
+    },
+    {
+      "id": "s8",
+      "title": "Desktop Extensions: One-click MCP server installation (Anthropic Engineering)",
+      "url": "https://www.anthropic.com/engineering/desktop-extensions",
+      "excerpt_ref": "sources/s8.md",
+      "accessed": "2026-07-01",
+      "tier": 1,
+      "trust_rationale": "Anthropic engineering blog, original source of the format."
+    },
+    {
+      "id": "s9",
+      "title": "Adopting the MCP Bundle format (.mcpb) (MCP Blog)",
+      "url": "https://blog.modelcontextprotocol.io/posts/2025-11-20-adopting-mcpb/",
+      "excerpt_ref": "sources/s9.md",
+      "accessed": "2026-07-01",
+      "tier": 1,
+      "trust_rationale": "The Model Context Protocol project's official blog on MCPB governance."
+    }
+  ],
+  "beats": [
+    {
+      "id": "b1",
+      "type": "narration",
+      "narration": "Skills teach Claude procedures, but sometimes you need Claude connected to a running local service — a Model Context Protocol server that talks to your database, your files, your tools. Those were powerful but genuinely painful to install: users had to have Node or Python, run npm commands, hand-edit a JSON config, resolve dependency conflicts, and restart. That friction kept local MCP servers out of most people's hands.",
+      "audio": "assets/audio/0006-b1.wav",
+      "visual": {
+        "kind": "svg_file",
+        "src": "assets/visuals/0006-b1.svg",
+        "alt": "The painful before flow versus the three-step .mcpb install after"
+      },
+      "citations": [
+        "s8"
+      ],
+      "audio_duration_s": 26.52
+    },
+    {
+      "id": "b2",
+      "type": "narration",
+      "narration": "MCPB — the MCP Bundle — fixes that. A bundle is simply a ZIP archive containing a local MCP server plus a manifest.json that describes it. The analogy the maintainers use is a Chrome extension, dot-crx, or a VS Code extension, dot-vsix: end users install with a single click. The format supports servers written in Node, Python, or a compiled binary, and the only strictly required file inside is the manifest.",
+      "audio": "assets/audio/0006-b2.wav",
+      "visual": {
+        "kind": "svg_file",
+        "src": "assets/visuals/0006-b2.svg",
+        "alt": "A .mcpb ZIP layout with manifest.json required, plus a one-click install panel"
+      },
+      "citations": [
+        "s9",
+        "s8"
+      ],
+      "audio_duration_s": 28.16
+    },
+    {
+      "id": "b3",
+      "type": "narration",
+      "narration": "The manifest.json is the heart of it. Six fields are required: manifest_version, a machine-readable name, a semantic version, a description, an author with at least a name, and a server object. The server object declares its type — say node — an entry point, and an mcp_config that tells the host exactly how to launch the server. That mcp_config is what replaces the JSON that users used to write by hand.",
+      "audio": "assets/audio/0006-b3.wav",
+      "visual": {
+        "kind": "svg_file",
+        "src": "assets/visuals/0006-b3.svg",
+        "alt": "A minimal manifest.json highlighting the six required fields and the server block"
+      },
+      "citations": [
+        "s7"
+      ],
+      "audio_duration_s": 25.9
+    },
+    {
+      "id": "b4",
+      "type": "quiz",
+      "format": "single_choice",
+      "narration_intro": "One essential fact.",
+      "audio_intro": "assets/audio/0006-b4-intro.wav",
+      "prompt": "What is the only strictly required file inside an .mcpb bundle?",
+      "options": [
+        {
+          "id": "a",
+          "text": "manifest.json"
+        },
+        {
+          "id": "b",
+          "text": "package.json, always present"
+        },
+        {
+          "id": "c",
+          "text": "an icon.png image file"
+        }
+      ],
+      "answer": "a",
+      "correct_feedback": "Correct. The manifest.json is the only required file; everything else is optional.",
+      "audio_correct": "assets/audio/0006-b4-correct.wav",
+      "incorrect_feedback": "Not quite. The only strictly required file inside an .mcpb bundle is manifest.json; the server files and icon are optional.",
+      "audio_incorrect": "assets/audio/0006-b4-incorrect.wav",
+      "citations": [
+        "s8"
+      ]
+    },
+    {
+      "id": "b5",
+      "type": "narration",
+      "narration": "There are four server types, and the choice affects how you bundle dependencies. Node bundles them in node_modules; Python bundles them in server-lib or a venv; a binary is a self-contained compiled executable needing no runtime. The newest, uv, is clever: instead of bundling, you declare dependencies in pyproject.toml and the host installs them — which keeps the bundle tiny, around a hundred kilobytes, and works cross-platform.",
+      "audio": "assets/audio/0006-b5.wav",
+      "visual": {
+        "kind": "svg_file",
+        "src": "assets/visuals/0006-b5.svg",
+        "alt": "The four server types: node, python, binary, and uv with their dependency strategies"
+      },
+      "citations": [
+        "s7"
+      ],
+      "audio_duration_s": 26.2
+    },
+    {
+      "id": "b6",
+      "type": "narration",
+      "narration": "Real servers need secrets and settings, and here the manifest shines. In a user_config block you declare what to collect — an API key, a directory, a timeout — each with a type, a title, and flags like required and sensitive. The host then shows a config UI, refuses to enable the server until required values are supplied, stores sensitive ones in the OS keychain, and swaps them in at launch. The developer never touches the raw secret.",
+      "audio": "assets/audio/0006-b6.wav",
+      "visual": {
+        "kind": "svg_file",
+        "src": "assets/visuals/0006-b6.svg",
+        "alt": "A user_config API key declaration and what the host does with it, including keychain storage"
+      },
+      "citations": [
+        "s7",
+        "s8"
+      ],
+      "audio_duration_s": 27.33
+    },
+    {
+      "id": "b7",
+      "type": "narration",
+      "narration": "Building one is refreshingly quick, because there's a CLI. You install the mcpb package globally, then run mcpb init, which interactively generates a manifest.json for your server, and mcpb pack, which validates the manifest and produces the dot-mcpb archive. To test, you drag that file into the client's settings window and click Install. Two commands, and you have a shippable bundle.",
+      "audio": "assets/audio/0006-b7.wav",
+      "visual": {
+        "kind": "svg_file",
+        "src": "assets/visuals/0006-b7.svg",
+        "alt": "The mcpb CLI: install, init, pack, then drag-in to test"
+      },
+      "citations": [
+        "s8"
+      ],
+      "audio_duration_s": 25.39
+    },
+    {
+      "id": "b8",
+      "type": "narration",
+      "narration": "One governance note worth knowing: MCPB was originally Anthropic's DXT, or Desktop Extension, format. In September 2025 the file extension changed from dot-dxt to dot-mcpb, and in November the whole format moved into the Model Context Protocol project. The point of that move was portability — a bundle built once should install in any compatible client, not just Claude.",
+      "audio": "assets/audio/0006-b8.wav",
+      "visual": {
+        "kind": "svg_file",
+        "src": "assets/visuals/0006-b8a.svg",
+        "alt": "A timeline: DXT launches, is renamed to .mcpb, then joins the MCP project"
+      },
+      "citations": [
+        "s8",
+        "s9"
+      ],
+      "audio_duration_s": 25.88
+    },
+    {
+      "id": "b8b",
+      "type": "narration",
+      "narration": "So let's place all three tools side by side. A Skill teaches Claude a procedure. A Claude Code Plugin bundles skills, agents, hooks, and MCP servers for that one client. An MCPB bundle packages a running local MCP server for one-click install across any MCP client. Different jobs, deliberately kept distinct.",
+      "audio": "assets/audio/0006-b8b.wav",
+      "visual": {
+        "kind": "svg_file",
+        "src": "assets/visuals/0006-b8.svg",
+        "alt": "A comparison of Skill, Plugin, and MCPB bundle and what each is for"
+      },
+      "citations": [
+        "s1",
+        "s6",
+        "s9"
+      ],
+      "audio_duration_s": 22.17
+    },
+    {
+      "id": "b9",
+      "type": "quiz",
+      "format": "single_choice",
+      "narration_intro": "Final check for the course.",
+      "audio_intro": "assets/audio/0006-b9-intro.wav",
+      "prompt": "What does an MCPB bundle package, that a plain Agent Skill does not?",
+      "options": [
+        {
+          "id": "a",
+          "text": "A runnable local MCP server installed in one click"
+        },
+        {
+          "id": "b",
+          "text": "Only a single Markdown file with some instructions"
+        },
+        {
+          "id": "c",
+          "text": "A set of prompts confined to one conversation only"
+        }
+      ],
+      "answer": "a",
+      "correct_feedback": "Right. MCPB packages a running local MCP server for one-click install; a skill is instructions Claude reads.",
+      "audio_correct": "assets/audio/0006-b9-correct.wav",
+      "incorrect_feedback": "Not quite. An MCPB bundle packages a runnable local MCP server for one-click install; a plain skill is just instructions Claude reads.",
+      "audio_incorrect": "assets/audio/0006-b9-incorrect.wav",
+      "citations": [
+        "s9"
+      ]
+    }
+  ],
+  "created": "2026-07-01T00:00:00Z",
+  "generated_by": "teach-me 0.1"
+}

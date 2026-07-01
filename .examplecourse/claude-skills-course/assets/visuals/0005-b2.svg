@@ -1,0 +1,20 @@
+<svg viewBox="0 0 800 450" xmlns="http://www.w3.org/2000/svg" font-family="ui-sans-serif, system-ui, sans-serif">
+  <rect width="800" height="450" fill="#0f1226"/>
+  <text x="40" y="56" fill="#e8e8f0" font-size="26" font-weight="700">Runtime constraints differ</text>
+  <text x="40" y="86" fill="#8a90b8" font-size="16">The same skill has different powers per surface</text>
+
+  <g transform="translate(60,115)" font-size="14">
+    <rect width="680" height="80" rx="12" fill="#1e2140" stroke="#7aa2f7" stroke-width="1.5"/>
+    <text x="20" y="34" fill="#7aa2f7" font-size="16" font-weight="700">claude.ai</text>
+    <text x="20" y="62" fill="#e8e8f0">network access varies with user / admin settings</text>
+
+    <rect y="95" width="680" height="80" rx="12" fill="#1e2140" stroke="#c9a227" stroke-width="1.5"/>
+    <text x="20" y="129" fill="#c9a227" font-size="16" font-weight="700">Claude API</text>
+    <text x="20" y="157" fill="#e8e8f0">no network · no runtime installs · pre-installed packages only</text>
+
+    <rect y="190" width="680" height="80" rx="12" fill="#1e2140" stroke="#6ee7b7" stroke-width="1.5"/>
+    <text x="20" y="224" fill="#6ee7b7" font-size="16" font-weight="700">Claude Code</text>
+    <text x="20" y="252" fill="#e8e8f0">full network (like any local program) · install locally, not globally</text>
+  </g>
+  <text x="40" y="425" fill="#5b6091" font-size="12">Source: Agent Skills Overview (Claude Platform Docs)</text>
+</svg>

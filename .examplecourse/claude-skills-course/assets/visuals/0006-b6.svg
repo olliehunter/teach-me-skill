@@ -1,0 +1,34 @@
+<svg viewBox="0 0 800 450" xmlns="http://www.w3.org/2000/svg" font-family="ui-sans-serif, system-ui, sans-serif">
+  <rect width="800" height="450" fill="#0f1226"/>
+  <text x="40" y="52" fill="#e8e8f0" font-size="26" font-weight="700">user_config: ask the user safely</text>
+  <text x="40" y="80" fill="#8a90b8" font-size="15">Declared config, collected by the host, injected at launch</text>
+
+  <g transform="translate(50,100)" font-family="ui-monospace, monospace" font-size="13">
+    <rect width="400" height="290" rx="12" fill="#12152e" stroke="#3a3f6b" stroke-width="1.5"/>
+    <text x="16" y="32" fill="#7aa2f7">"user_config": {</text>
+    <text x="16" y="56" fill="#e8e8f0">  "api_key": {</text>
+    <text x="16" y="80" fill="#e8e8f0">    "type": "string",</text>
+    <text x="16" y="104" fill="#e8e8f0">    "title": "API Key",</text>
+    <text x="16" y="128" fill="#c9a227">    "sensitive": true,</text>
+    <text x="16" y="152" fill="#e8e8f0">    "required": true } },</text>
+    <text x="16" y="188" fill="#7aa2f7">"server": { "mcp_config": {</text>
+    <text x="16" y="212" fill="#e8e8f0">  "env": {</text>
+    <text x="16" y="236" fill="#e8e8f0">    "API_KEY":</text>
+    <text x="16" y="260" fill="#6ee7b7">      "${user_config.api_key}" }}}</text>
+  </g>
+
+  <g transform="translate(475,100)" font-size="13">
+    <rect width="275" height="290" rx="12" fill="#1e2140" stroke="#6ee7b7" stroke-width="1.5"/>
+    <text x="18" y="34" fill="#6ee7b7" font-weight="700" font-size="14">The host will…</text>
+    <text x="18" y="66" fill="#e8e8f0">• show a config UI</text>
+    <text x="18" y="94" fill="#e8e8f0">• not enable until filled</text>
+    <text x="18" y="122" fill="#e8e8f0">• store secrets in the</text>
+    <text x="18" y="140" fill="#e8e8f0">  OS keychain</text>
+    <text x="18" y="168" fill="#e8e8f0">• swap in the value at</text>
+    <text x="18" y="186" fill="#e8e8f0">  launch</text>
+    <text x="18" y="230" fill="#8a90b8" font-size="11.5">types: string · number ·</text>
+    <text x="18" y="248" fill="#8a90b8" font-size="11.5">boolean · directory · file</text>
+    <text x="18" y="276" fill="#8a90b8" font-size="11.5">${__dirname} resolves paths</text>
+  </g>
+  <text x="40" y="428" fill="#5b6091" font-size="12">Source: MCPB Manifest Spec · Desktop Extensions blog</text>
+</svg>

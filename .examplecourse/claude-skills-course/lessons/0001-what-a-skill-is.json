@@ -1,0 +1,196 @@
+{
+  "schema_version": "1.0",
+  "lesson_id": "0001",
+  "slug": "what-a-skill-is",
+  "title": "What an Agent Skill Is",
+  "mission_ref": "MISSION.md",
+  "objective": "Explain what an Agent Skill is, how it differs from a prompt, the two required metadata fields, and when to build one.",
+  "prerequisites": [],
+  "estimated_seconds": 210,
+  "voice": {
+    "engine": "kokoro",
+    "lang_code": "a",
+    "voice": "af_heart",
+    "speed": 1.0
+  },
+  "sources": [
+    {
+      "id": "s1",
+      "title": "Agent Skills — Overview (Claude Platform Docs)",
+      "url": "https://platform.claude.com/docs/en/agents-and-tools/agent-skills/overview",
+      "excerpt_ref": "sources/s1.md",
+      "accessed": "2026-07-01",
+      "tier": 1,
+      "trust_rationale": "Anthropic's canonical product documentation for Agent Skills."
+    },
+    {
+      "id": "s3",
+      "title": "Equipping agents for the real world with Agent Skills (Anthropic Engineering)",
+      "url": "https://www.anthropic.com/engineering/equipping-agents-for-the-real-world-with-agent-skills",
+      "excerpt_ref": "sources/s3.md",
+      "accessed": "2026-07-01",
+      "tier": 1,
+      "trust_rationale": "Anthropic's own engineering blog explaining the design and rationale."
+    },
+    {
+      "id": "s4",
+      "title": "anthropics/skills — README + template (GitHub)",
+      "url": "https://github.com/anthropics/skills",
+      "excerpt_ref": "sources/s4.md",
+      "accessed": "2026-07-01",
+      "tier": 1,
+      "trust_rationale": "Anthropic's official Skills repository and minimal template."
+    },
+    {
+      "id": "s5",
+      "title": "Extend Claude with skills (Claude Code Docs)",
+      "url": "https://code.claude.com/docs/en/skills",
+      "excerpt_ref": "sources/s5.md",
+      "accessed": "2026-07-01",
+      "tier": 1,
+      "trust_rationale": "Official Claude Code documentation."
+    }
+  ],
+  "beats": [
+    {
+      "id": "b1",
+      "type": "narration",
+      "narration": "An Agent Skill is, at its simplest, a directory containing a file called SKILL.md. That file holds instructions, metadata, and optionally scripts and resources that Claude discovers and loads when they're relevant. The useful mental model, from Anthropic's own team: building a skill is like writing an onboarding guide for a new hire.",
+      "audio": "assets/audio/0001-b1.wav",
+      "visual": {
+        "kind": "svg_file",
+        "src": "assets/visuals/0001-b1.svg",
+        "alt": "A folder named pdf containing SKILL.md and supporting files, feeding into a specialised Claude"
+      },
+      "citations": [
+        "s3",
+        "s1"
+      ],
+      "audio_duration_s": 21.16
+    },
+    {
+      "id": "b2",
+      "type": "narration",
+      "narration": "So how is that different from just prompting well? A prompt is a conversation-level instruction for a one-off task. A skill is a reusable, filesystem-based resource that loads on demand. Instead of re-pasting the same guidance every time, you capture it once, and Claude pulls it in automatically whenever a task matches.",
+      "audio": "assets/audio/0001-b2.wav",
+      "visual": {
+        "kind": "svg_file",
+        "src": "assets/visuals/0001-b2.svg",
+        "alt": "Side-by-side comparison of a prompt versus a skill"
+      },
+      "citations": [
+        "s1"
+      ],
+      "audio_duration_s": 20.27
+    },
+    {
+      "id": "b3",
+      "type": "narration",
+      "narration": "The format is deliberately tiny. A SKILL.md must begin with YAML frontmatter carrying just two required fields: a name, and a description. Everything below the frontmatter is plain Markdown — the instructions Claude follows when the skill is active. That's the entire required contract. The simplicity is the point.",
+      "audio": "assets/audio/0001-b3.wav",
+      "visual": {
+        "kind": "svg_file",
+        "src": "assets/visuals/0001-b3.svg",
+        "alt": "A minimal SKILL.md showing name and description frontmatter above a Markdown body"
+      },
+      "citations": [
+        "s4",
+        "s3"
+      ],
+      "audio_duration_s": 20.91
+    },
+    {
+      "id": "b4",
+      "type": "quiz",
+      "format": "single_choice",
+      "narration_intro": "Quick check on the essentials.",
+      "audio_intro": "assets/audio/0001-b4-intro.wav",
+      "prompt": "Which two fields are required in a SKILL.md's frontmatter?",
+      "options": [
+        {
+          "id": "a",
+          "text": "name and description"
+        },
+        {
+          "id": "b",
+          "text": "title and version, always"
+        },
+        {
+          "id": "c",
+          "text": "author and license, always"
+        }
+      ],
+      "answer": "a",
+      "correct_feedback": "Correct. Only name and description are required; everything else is optional.",
+      "audio_correct": "assets/audio/0001-b4-correct.wav",
+      "incorrect_feedback": "Not quite. The two required frontmatter fields are name and description — everything else, like version or author, is optional.",
+      "audio_incorrect": "assets/audio/0001-b4-incorrect.wav",
+      "citations": [
+        "s1"
+      ]
+    },
+    {
+      "id": "b5",
+      "type": "narration",
+      "narration": "Why does this shape matter? Because skills compose. Rather than building a separate custom agent for every use case, you give one general agent a stack of skills — a PDF skill, a brand skill, a database skill — and it becomes a specialist exactly where you need it. Your procedural knowledge turns into shareable, composable capability.",
+      "audio": "assets/audio/0001-b5.wav",
+      "visual": {
+        "kind": "svg_file",
+        "src": "assets/visuals/0001-b5.svg",
+        "alt": "A general agent plus several skills combining into a specialised agent"
+      },
+      "citations": [
+        "s1",
+        "s3"
+      ],
+      "audio_duration_s": 20.63
+    },
+    {
+      "id": "b6",
+      "type": "narration",
+      "narration": "A practical trigger for creating one: you notice you keep pasting the same instructions or checklist into chat, or a multi-step procedure keeps recurring, or a section of your CLAUDE.md has quietly become a procedure rather than a fact. That repetition is the signal. And because a skill's body loads only when used, long reference material costs almost nothing until it's needed.",
+      "audio": "assets/audio/0001-b6.wav",
+      "visual": {
+        "kind": "svg_file",
+        "src": "assets/visuals/0001-b6.svg",
+        "alt": "A checklist of signals that it is time to build a skill"
+      },
+      "citations": [
+        "s5"
+      ],
+      "audio_duration_s": 23.96
+    },
+    {
+      "id": "b7",
+      "type": "quiz",
+      "format": "single_choice",
+      "narration_intro": "One more.",
+      "audio_intro": "assets/audio/0001-b7-intro.wav",
+      "prompt": "What best captures how a skill differs from a prompt?",
+      "options": [
+        {
+          "id": "a",
+          "text": "A skill is reusable and loads on demand; a prompt is one-off"
+        },
+        {
+          "id": "b",
+          "text": "A skill can only ever contain a single line of text"
+        },
+        {
+          "id": "c",
+          "text": "A prompt can bundle scripts, but a skill cannot"
+        }
+      ],
+      "answer": "a",
+      "correct_feedback": "Right. Skills are reusable, filesystem-based, and load on demand, unlike one-off prompts.",
+      "audio_correct": "assets/audio/0001-b7-correct.wav",
+      "incorrect_feedback": "Not quite. A skill is reusable and loads on demand, whereas a prompt is a one-off, conversation-level instruction.",
+      "audio_incorrect": "assets/audio/0001-b7-incorrect.wav",
+      "citations": [
+        "s1"
+      ]
+    }
+  ],
+  "created": "2026-07-01T00:00:00Z",
+  "generated_by": "teach-me 0.1"
+}

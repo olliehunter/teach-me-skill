@@ -1,0 +1,30 @@
+<svg viewBox="0 0 800 450" xmlns="http://www.w3.org/2000/svg" font-family="ui-sans-serif, system-ui, sans-serif">
+  <rect width="800" height="450" fill="#0f1226"/>
+  <text x="40" y="56" fill="#e8e8f0" font-size="26" font-weight="700">Concise is key</text>
+  <text x="40" y="86" fill="#8a90b8" font-size="16">Default assumption: Claude is already very smart</text>
+
+  <g transform="translate(60,115)">
+    <rect width="330" height="240" rx="12" fill="#12152e" stroke="#f0a3a3" stroke-width="1.5"/>
+    <text x="20" y="32" fill="#f0a3a3" font-size="14" font-weight="700">~150 tokens · verbose</text>
+    <text x="20" y="66" fill="#8a90b8" font-size="12.5">"PDF files are a common format</text>
+    <text x="20" y="86" fill="#8a90b8" font-size="12.5">that contain text and images.</text>
+    <text x="20" y="106" fill="#8a90b8" font-size="12.5">To extract text you'll need a</text>
+    <text x="20" y="126" fill="#8a90b8" font-size="12.5">library. There are many, but</text>
+    <text x="20" y="146" fill="#8a90b8" font-size="12.5">pdfplumber is recommended…"</text>
+    <text x="20" y="196" fill="#f0a3a3" font-size="12.5">Explains what Claude</text>
+    <text x="20" y="214" fill="#f0a3a3" font-size="12.5">already knows.</text>
+  </g>
+
+  <g transform="translate(420,115)">
+    <rect width="330" height="240" rx="12" fill="#12152e" stroke="#6ee7b7" stroke-width="2"/>
+    <text x="20" y="32" fill="#6ee7b7" font-size="14" font-weight="700">~50 tokens · concise</text>
+    <text x="20" y="70" fill="#e8e8f0" font-size="13" font-family="ui-monospace, monospace">Use pdfplumber:</text>
+    <text x="20" y="98" fill="#a9b0e0" font-size="12.5" font-family="ui-monospace, monospace">with pdfplumber.open(f) as pdf:</text>
+    <text x="20" y="118" fill="#a9b0e0" font-size="12.5" font-family="ui-monospace, monospace">    text = pdf.pages[0]</text>
+    <text x="20" y="138" fill="#a9b0e0" font-size="12.5" font-family="ui-monospace, monospace">        .extract_text()</text>
+    <text x="20" y="196" fill="#6ee7b7" font-size="12.5">Every token competes with</text>
+    <text x="20" y="214" fill="#6ee7b7" font-size="12.5">history and other context.</text>
+  </g>
+  <text x="40" y="395" fill="#8a90b8" font-size="13">Ask of each line: does this justify its token cost?</text>
+  <text x="40" y="425" fill="#5b6091" font-size="12">Source: Skill authoring best practices (Claude Platform Docs)</text>
+</svg>

@@ -1,0 +1,31 @@
+<svg viewBox="0 0 800 450" xmlns="http://www.w3.org/2000/svg" font-family="ui-sans-serif, system-ui, sans-serif">
+  <rect width="800" height="450" fill="#0f1226"/>
+  <text x="40" y="56" fill="#e8e8f0" font-size="26" font-weight="700">General-purpose → specialist</text>
+  <text x="40" y="86" fill="#8a90b8" font-size="16">Skills compose, instead of fragmenting into custom agents</text>
+
+  <g transform="translate(70,150)">
+    <circle cx="60" cy="90" r="55" fill="#1e2140" stroke="#7aa2f7" stroke-width="2"/>
+    <text x="60" y="86" fill="#e8e8f0" font-size="14" text-anchor="middle">general</text>
+    <text x="60" y="106" fill="#e8e8f0" font-size="14" text-anchor="middle">agent</text>
+  </g>
+
+  <text x="215" y="245" fill="#6ee7b7" font-size="28">+</text>
+
+  <g transform="translate(250,140)" font-size="13">
+    <rect x="0" y="0" width="120" height="40" rx="8" fill="#232748" stroke="#c9a227"/>
+    <text x="60" y="25" fill="#e8e8f0" text-anchor="middle">pdf skill</text>
+    <rect x="0" y="55" width="120" height="40" rx="8" fill="#232748" stroke="#c9a227"/>
+    <text x="60" y="80" fill="#e8e8f0" text-anchor="middle">brand skill</text>
+    <rect x="0" y="110" width="120" height="40" rx="8" fill="#232748" stroke="#c9a227"/>
+    <text x="60" y="135" fill="#e8e8f0" text-anchor="middle">sql skill</text>
+  </g>
+
+  <text x="400" y="245" fill="#6ee7b7" font-size="28">→</text>
+
+  <g transform="translate(450,150)">
+    <circle cx="90" cy="90" r="70" fill="#1e2140" stroke="#6ee7b7" stroke-width="2.5"/>
+    <text x="90" y="82" fill="#6ee7b7" font-size="15" text-anchor="middle" font-weight="700">specialised</text>
+    <text x="90" y="104" fill="#6ee7b7" font-size="15" text-anchor="middle" font-weight="700">agent</text>
+  </g>
+  <text x="40" y="425" fill="#5b6091" font-size="12">Source: Agent Skills Overview · Anthropic Engineering</text>
+</svg>

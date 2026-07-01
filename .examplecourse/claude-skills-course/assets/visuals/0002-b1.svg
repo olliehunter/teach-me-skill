@@ -1,0 +1,21 @@
+<svg viewBox="0 0 800 450" xmlns="http://www.w3.org/2000/svg" font-family="ui-sans-serif, system-ui, sans-serif">
+  <rect width="800" height="450" fill="#0f1226"/>
+  <text x="40" y="56" fill="#e8e8f0" font-size="26" font-weight="700">The context window is a public good</text>
+  <text x="40" y="86" fill="#8a90b8" font-size="16">Everything shares one finite budget</text>
+
+  <g transform="translate(230,120)">
+    <rect width="340" height="290" rx="14" fill="#12152e" stroke="#c9a227" stroke-width="2"/>
+    <text x="170" y="30" fill="#c9a227" font-size="15" text-anchor="middle" font-weight="700">context window</text>
+    <g font-size="14">
+      <rect x="20" y="48" width="300" height="42" rx="8" fill="#1e2140"/>
+      <text x="34" y="74" fill="#e8e8f0">system prompt</text>
+      <rect x="20" y="98" width="300" height="42" rx="8" fill="#1e2140"/>
+      <text x="34" y="124" fill="#e8e8f0">conversation history</text>
+      <rect x="20" y="148" width="300" height="42" rx="8" fill="#1e2140"/>
+      <text x="34" y="174" fill="#e8e8f0">every skill's metadata</text>
+      <rect x="20" y="198" width="300" height="42" rx="8" fill="#1e2140"/>
+      <text x="34" y="224" fill="#e8e8f0">your actual request</text>
+    </g>
+  </g>
+  <text x="40" y="435" fill="#5b6091" font-size="12">Source: Skill authoring best practices (Claude Platform Docs)</text>
+</svg>

@@ -1,0 +1,18 @@
+<svg viewBox="0 0 800 450" xmlns="http://www.w3.org/2000/svg" font-family="ui-sans-serif, system-ui, sans-serif">
+  <rect width="800" height="450" fill="#0f1226"/>
+  <text x="40" y="56" fill="#e8e8f0" font-size="26" font-weight="700">One standard, extra Claude Code powers</text>
+  <text x="40" y="86" fill="#8a90b8" font-size="16">Skills follow the Agent Skills open standard; Claude Code adds more</text>
+
+  <g transform="translate(60,120)" font-family="ui-monospace, monospace" font-size="14">
+    <rect width="680" height="230" rx="12" fill="#12152e" stroke="#3a3f6b" stroke-width="1.5"/>
+    <text x="20" y="40" fill="#c9a227">---</text>
+    <text x="20" y="66" fill="#7aa2f7">disable-model-invocation<tspan fill="#e8e8f0">: true</tspan>  <tspan fill="#8a90b8" font-size="12">only you can run it (/deploy)</tspan></text>
+    <text x="20" y="92" fill="#7aa2f7">user-invocable<tspan fill="#e8e8f0">: false</tspan>          <tspan fill="#8a90b8" font-size="12">only Claude; hidden from menu</tspan></text>
+    <text x="20" y="118" fill="#7aa2f7">allowed-tools<tspan fill="#e8e8f0">: Bash(git commit *)</tspan>  <tspan fill="#8a90b8" font-size="12">no per-use prompt</tspan></text>
+    <text x="20" y="144" fill="#7aa2f7">context<tspan fill="#e8e8f0">: fork</tspan>                 <tspan fill="#8a90b8" font-size="12">run in an isolated subagent</tspan></text>
+    <text x="20" y="170" fill="#7aa2f7">agent<tspan fill="#e8e8f0">: Explore</tspan></text>
+    <text x="20" y="196" fill="#c9a227">---</text>
+  </g>
+  <text x="60" y="378" fill="#8a90b8" font-size="13">Plus dynamic injection: !`git diff HEAD` runs before Claude sees the skill.</text>
+  <text x="40" y="425" fill="#5b6091" font-size="12">Source: Extend Claude with skills (Claude Code Docs)</text>
+</svg>

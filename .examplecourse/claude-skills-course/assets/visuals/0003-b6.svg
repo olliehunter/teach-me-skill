@@ -1,0 +1,22 @@
+<svg viewBox="0 0 800 450" xmlns="http://www.w3.org/2000/svg" font-family="ui-sans-serif, system-ui, sans-serif">
+  <rect width="800" height="450" fill="#0f1226"/>
+  <text x="40" y="52" fill="#e8e8f0" font-size="26" font-weight="700">Set the degrees of freedom</text>
+  <text x="40" y="80" fill="#8a90b8" font-size="15">Match specificity to the task's fragility</text>
+
+  <g transform="translate(50,100)">
+    <rect width="700" height="86" rx="12" fill="#1e2140" stroke="#6ee7b7" stroke-width="1.5"/>
+    <text x="20" y="32" fill="#6ee7b7" font-size="16" font-weight="700">High freedom — prose</text>
+    <text x="20" y="58" fill="#e8e8f0" font-size="13.5">Many valid paths; decisions depend on context. "Review the code for bugs…"</text>
+    <text x="20" y="78" fill="#8a90b8" font-size="12.5">An open field: give direction, trust Claude to route.</text>
+
+    <rect y="98" width="700" height="86" rx="12" fill="#1e2140" stroke="#c9a227" stroke-width="1.5"/>
+    <text x="20" y="130" fill="#c9a227" font-size="16" font-weight="700">Medium freedom — parameterised patterns</text>
+    <text x="20" y="156" fill="#e8e8f0" font-size="13.5">A preferred pattern with some variation. "Use this template, customise as needed."</text>
+
+    <rect y="196" width="700" height="86" rx="12" fill="#1e2140" stroke="#f0a3a3" stroke-width="1.5"/>
+    <text x="20" y="228" fill="#f0a3a3" font-size="16" font-weight="700">Low freedom — exact scripts</text>
+    <text x="20" y="254" fill="#e8e8f0" font-size="13.5">Fragile, must-be-consistent steps. "Run exactly this. Do not modify the command."</text>
+    <text x="20" y="274" fill="#8a90b8" font-size="12.5">A narrow bridge with cliffs: give exact guardrails.</text>
+  </g>
+  <text x="40" y="428" fill="#5b6091" font-size="12">Source: Skill authoring best practices (Claude Platform Docs)</text>
+</svg>

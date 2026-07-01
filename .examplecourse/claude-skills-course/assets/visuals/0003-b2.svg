@@ -1,0 +1,32 @@
+<svg viewBox="0 0 800 450" xmlns="http://www.w3.org/2000/svg" font-family="ui-sans-serif, system-ui, sans-serif">
+  <rect width="800" height="450" fill="#0f1226"/>
+  <text x="40" y="56" fill="#e8e8f0" font-size="26" font-weight="700">Naming: prefer the gerund</text>
+  <text x="40" y="86" fill="#8a90b8" font-size="16">Verb + -ing, describing the activity</text>
+
+  <g transform="translate(60,120)">
+    <rect width="330" height="270" rx="14" fill="#1e2140" stroke="#6ee7b7" stroke-width="2"/>
+    <text x="24" y="42" fill="#6ee7b7" font-size="18" font-weight="700">Good</text>
+    <g font-size="15" fill="#e8e8f0" font-family="ui-monospace, monospace">
+      <text x="24" y="82">processing-pdfs</text>
+      <text x="24" y="114">analyzing-spreadsheets</text>
+      <text x="24" y="146">managing-databases</text>
+      <text x="24" y="178">testing-code</text>
+    </g>
+    <text x="24" y="222" fill="#8a90b8" font-size="13">also fine: pdf-processing,</text>
+    <text x="24" y="244" fill="#8a90b8" font-size="13">process-pdfs</text>
+  </g>
+
+  <g transform="translate(420,120)">
+    <rect width="330" height="270" rx="14" fill="#1e2140" stroke="#f0a3a3" stroke-width="2"/>
+    <text x="24" y="42" fill="#f0a3a3" font-size="18" font-weight="700">Avoid</text>
+    <g font-size="15" fill="#e8e8f0" font-family="ui-monospace, monospace">
+      <text x="24" y="82">helper</text>
+      <text x="24" y="114">utils</text>
+      <text x="24" y="146">tools</text>
+      <text x="24" y="178">documents / data</text>
+    </g>
+    <text x="24" y="222" fill="#8a90b8" font-size="13">vague, generic, reserved words,</text>
+    <text x="24" y="244" fill="#8a90b8" font-size="13">or inconsistent patterns</text>
+  </g>
+  <text x="40" y="425" fill="#5b6091" font-size="12">Source: Skill authoring best practices (Claude Platform Docs)</text>
+</svg>

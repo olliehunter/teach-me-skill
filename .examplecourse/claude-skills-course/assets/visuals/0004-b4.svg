@@ -1,0 +1,35 @@
+<svg viewBox="0 0 800 450" xmlns="http://www.w3.org/2000/svg" font-family="ui-sans-serif, system-ui, sans-serif">
+  <rect width="800" height="450" fill="#0f1226"/>
+  <text x="40" y="56" fill="#e8e8f0" font-size="26" font-weight="700">Workflows and feedback loops</text>
+  <text x="40" y="86" fill="#8a90b8" font-size="16">Checklists to follow, validators to satisfy</text>
+
+  <g transform="translate(60,120)">
+    <rect width="330" height="270" rx="12" fill="#12152e" stroke="#7aa2f7" stroke-width="1.5"/>
+    <text x="20" y="34" fill="#7aa2f7" font-size="15" font-weight="700">Copyable checklist</text>
+    <g font-size="13.5" font-family="ui-monospace, monospace" fill="#e8e8f0">
+      <text x="20" y="72">[ ] analyze the form</text>
+      <text x="20" y="100">[ ] create field mapping</text>
+      <text x="20" y="128">[ ] validate mapping</text>
+      <text x="20" y="156">[ ] fill the form</text>
+      <text x="20" y="184">[ ] verify output</text>
+    </g>
+    <text x="20" y="230" fill="#8a90b8" font-size="12.5">Prevents Claude skipping</text>
+    <text x="20" y="250" fill="#8a90b8" font-size="12.5">critical steps.</text>
+  </g>
+
+  <g transform="translate(420,120)">
+    <rect width="330" height="270" rx="12" fill="#12152e" stroke="#6ee7b7" stroke-width="2"/>
+    <text x="20" y="34" fill="#6ee7b7" font-size="15" font-weight="700">Feedback loop</text>
+    <g transform="translate(60,70)">
+      <rect x="0" y="0" width="200" height="34" rx="8" fill="#1e2140"/>
+      <text x="100" y="22" fill="#e8e8f0" font-size="13" text-anchor="middle">run validator</text>
+      <text x="100" y="56" fill="#6ee7b7" font-size="16" text-anchor="middle">↓</text>
+      <rect x="0" y="66" width="200" height="34" rx="8" fill="#1e2140"/>
+      <text x="100" y="88" fill="#e8e8f0" font-size="13" text-anchor="middle">fix errors</text>
+      <text x="100" y="122" fill="#6ee7b7" font-size="16" text-anchor="middle">↺ repeat</text>
+    </g>
+    <text x="20" y="235" fill="#8a90b8" font-size="12.5">The "validator" can be a</text>
+    <text x="20" y="255" fill="#8a90b8" font-size="12.5">script or a STYLE_GUIDE.md.</text>
+  </g>
+  <text x="40" y="425" fill="#5b6091" font-size="12">Source: Skill authoring best practices (Claude Platform Docs)</text>
+</svg>

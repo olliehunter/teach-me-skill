@@ -1,0 +1,21 @@
+<svg viewBox="0 0 800 450" xmlns="http://www.w3.org/2000/svg" font-family="ui-sans-serif, system-ui, sans-serif">
+  <rect width="800" height="450" fill="#0f1226"/>
+  <text x="40" y="56" fill="#e8e8f0" font-size="26" font-weight="700">Evaluation-driven development</text>
+  <text x="40" y="86" fill="#8a90b8" font-size="16">Build the evals before the documentation</text>
+
+  <g transform="translate(60,120)" font-size="14">
+    <rect width="680" height="180" rx="12" fill="#12152e" stroke="#3a3f6b" stroke-width="1.5"/>
+    <text x="20" y="40" fill="#e8e8f0">1 · Run Claude on real tasks with no skill — note the failures</text>
+    <text x="20" y="70" fill="#e8e8f0">2 · Build ~3 evaluation scenarios that test those gaps</text>
+    <text x="20" y="100" fill="#e8e8f0">3 · Establish a baseline without the skill</text>
+    <text x="20" y="130" fill="#e8e8f0">4 · Write the minimal instructions that pass</text>
+    <text x="20" y="160" fill="#e8e8f0">5 · Iterate against the baseline</text>
+  </g>
+
+  <g transform="translate(60,315)">
+    <rect width="680" height="65" rx="12" fill="#1e2140" stroke="#6ee7b7" stroke-width="1.5"/>
+    <text x="20" y="28" fill="#6ee7b7" font-size="14" font-weight="700">Claude A builds · Claude B (fresh) tests</text>
+    <text x="20" y="52" fill="#8a90b8" font-size="13">Observe Claude B's real behaviour, bring the gaps back to Claude A.</text>
+  </g>
+  <text x="40" y="425" fill="#5b6091" font-size="12">Source: Skill authoring best practices (Claude Platform Docs)</text>
+</svg>

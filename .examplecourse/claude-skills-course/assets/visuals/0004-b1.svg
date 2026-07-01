@@ -1,0 +1,17 @@
+<svg viewBox="0 0 800 450" xmlns="http://www.w3.org/2000/svg" font-family="ui-sans-serif, system-ui, sans-serif">
+  <rect width="800" height="450" fill="#0f1226"/>
+  <text x="40" y="56" fill="#e8e8f0" font-size="26" font-weight="700">Split when SKILL.md grows</text>
+  <text x="40" y="86" fill="#8a90b8" font-size="16">Keep the body under ~500 lines; bundle the rest</text>
+
+  <g transform="translate(60,120)" font-family="ui-monospace, monospace" font-size="14">
+    <rect width="680" height="260" rx="12" fill="#12152e" stroke="#3a3f6b" stroke-width="1.5"/>
+    <text x="20" y="40" fill="#6ee7b7">pdf/</text>
+    <text x="40" y="72" fill="#e8e8f0">├── SKILL.md        <tspan fill="#8a90b8">overview + navigation (loaded on trigger)</tspan></text>
+    <text x="40" y="104" fill="#e8e8f0">├── FORMS.md        <tspan fill="#8a90b8">form-filling guide (loaded as needed)</tspan></text>
+    <text x="40" y="136" fill="#e8e8f0">├── reference.md    <tspan fill="#8a90b8">full API docs (loaded as needed)</tspan></text>
+    <text x="40" y="168" fill="#e8e8f0">├── examples.md     <tspan fill="#8a90b8">patterns (loaded as needed)</tspan></text>
+    <text x="40" y="200" fill="#e8e8f0">└── scripts/</text>
+    <text x="60" y="228" fill="#e8e8f0">    └── fill_form.py <tspan fill="#8a90b8">executed, never loaded</tspan></text>
+  </g>
+  <text x="40" y="420" fill="#5b6091" font-size="12">Source: Skill authoring best practices (Claude Platform Docs)</text>
+</svg>

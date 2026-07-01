@@ -1,0 +1,20 @@
+<svg viewBox="0 0 800 450" xmlns="http://www.w3.org/2000/svg" font-family="ui-sans-serif, system-ui, sans-serif">
+  <rect width="800" height="450" fill="#0f1226"/>
+  <text x="40" y="52" fill="#e8e8f0" font-size="26" font-weight="700">Three levels of loading</text>
+  <text x="40" y="80" fill="#8a90b8" font-size="15">A table of contents, then chapters, then the appendix</text>
+
+  <g transform="translate(60,105)">
+    <rect width="680" height="80" rx="12" fill="#1e2140" stroke="#7aa2f7" stroke-width="2"/>
+    <text x="20" y="34" fill="#7aa2f7" font-size="17" font-weight="700">Level 1 · Metadata</text>
+    <text x="20" y="60" fill="#e8e8f0" font-size="14">name + description · always loaded at startup · ~100 tokens each</text>
+
+    <rect y="95" width="680" height="80" rx="12" fill="#1e2140" stroke="#6ee7b7" stroke-width="2"/>
+    <text x="20" y="129" fill="#6ee7b7" font-size="17" font-weight="700">Level 2 · Instructions</text>
+    <text x="20" y="155" fill="#e8e8f0" font-size="14">SKILL.md body · loaded when the skill is triggered · under 5k tokens</text>
+
+    <rect y="190" width="680" height="80" rx="12" fill="#1e2140" stroke="#c9a227" stroke-width="2"/>
+    <text x="20" y="224" fill="#c9a227" font-size="17" font-weight="700">Level 3+ · Resources &amp; code</text>
+    <text x="20" y="250" fill="#e8e8f0" font-size="14">bundled files + scripts · loaded or executed only as needed · effectively unlimited</text>
+  </g>
+  <text x="40" y="430" fill="#5b6091" font-size="12">Source: Agent Skills Overview · Anthropic Engineering</text>
+</svg>

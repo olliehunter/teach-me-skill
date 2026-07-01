@@ -1,0 +1,20 @@
+<svg viewBox="0 0 800 450" xmlns="http://www.w3.org/2000/svg" font-family="ui-sans-serif, system-ui, sans-serif">
+  <rect width="800" height="450" fill="#0f1226"/>
+  <text x="40" y="56" fill="#e8e8f0" font-size="26" font-weight="700">Build it with the mcpb CLI</text>
+  <text x="40" y="86" fill="#8a90b8" font-size="16">Two commands to a shippable bundle</text>
+
+  <g transform="translate(60,120)" font-family="ui-monospace, monospace" font-size="15">
+    <rect width="680" height="150" rx="12" fill="#12152e" stroke="#6ee7b7" stroke-width="1.5"/>
+    <text x="20" y="44" fill="#8a90b8" font-size="13"># install once</text>
+    <text x="20" y="70" fill="#e8e8f0">npm install -g @anthropic-ai/mcpb</text>
+    <text x="20" y="104" fill="#6ee7b7">mcpb init  <tspan fill="#8a90b8" font-size="13"># interactive → generates manifest.json</tspan></text>
+    <text x="20" y="132" fill="#6ee7b7">mcpb pack  <tspan fill="#8a90b8" font-size="13"># validates + produces the .mcpb archive</tspan></text>
+  </g>
+
+  <g transform="translate(60,295)">
+    <rect width="680" height="85" rx="12" fill="#1e2140" stroke="#c9a227" stroke-width="1.5"/>
+    <text x="20" y="34" fill="#c9a227" font-size="14" font-weight="700">Test</text>
+    <text x="20" y="62" fill="#e8e8f0" font-size="14">Drag the .mcpb into the client's settings window → Install.</text>
+  </g>
+  <text x="40" y="425" fill="#5b6091" font-size="12">Source: Desktop Extensions (Anthropic Engineering)</text>
+</svg>

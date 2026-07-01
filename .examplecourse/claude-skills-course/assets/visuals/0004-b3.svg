@@ -1,0 +1,21 @@
+<svg viewBox="0 0 800 450" xmlns="http://www.w3.org/2000/svg" font-family="ui-sans-serif, system-ui, sans-serif">
+  <rect width="800" height="450" fill="#0f1226"/>
+  <text x="40" y="56" fill="#e8e8f0" font-size="26" font-weight="700">Scripts: solve, don't punt</text>
+  <text x="40" y="86" fill="#8a90b8" font-size="16">A utility script beats generated code</text>
+
+  <g transform="translate(60,115)">
+    <rect width="680" height="120" rx="12" fill="#12152e" stroke="#6ee7b7" stroke-width="1.5"/>
+    <text x="20" y="34" fill="#6ee7b7" font-size="15" font-weight="700">Why pre-write scripts</text>
+    <text x="20" y="64" fill="#e8e8f0" font-size="14">• more reliable than generated code   • deterministic and consistent</text>
+    <text x="20" y="92" fill="#e8e8f0" font-size="14">• saves tokens + time — the code never enters context, only its output</text>
+  </g>
+
+  <g transform="translate(60,255)">
+    <rect width="680" height="130" rx="12" fill="#12152e" stroke="#c9a227" stroke-width="1.5"/>
+    <text x="20" y="34" fill="#c9a227" font-size="15" font-weight="700">Solve, don't punt</text>
+    <text x="20" y="64" fill="#e8e8f0" font-size="14">Handle errors in the script instead of failing for Claude to fix.</text>
+    <text x="20" y="92" fill="#e8e8f0" font-size="14">Be explicit about intent: "Run analyze_form.py" (execute) vs</text>
+    <text x="20" y="114" fill="#e8e8f0" font-size="14">"See analyze_form.py for the algorithm" (read as reference).</text>
+  </g>
+  <text x="40" y="425" fill="#5b6091" font-size="12">Source: Skill authoring best practices (Claude Platform Docs)</text>
+</svg>

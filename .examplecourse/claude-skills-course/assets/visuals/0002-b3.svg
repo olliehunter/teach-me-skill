@@ -1,0 +1,26 @@
+<svg viewBox="0 0 800 450" xmlns="http://www.w3.org/2000/svg" font-family="ui-sans-serif, system-ui, sans-serif">
+  <rect width="800" height="450" fill="#0f1226"/>
+  <text x="40" y="56" fill="#e8e8f0" font-size="26" font-weight="700">Level 1: metadata, always on</text>
+  <text x="40" y="86" fill="#8a90b8" font-size="16">Cheap enough to install many skills at once</text>
+
+  <g transform="translate(60,120)">
+    <rect width="680" height="150" rx="12" fill="#12152e" stroke="#7aa2f7" stroke-width="1.5"/>
+    <text x="16" y="30" fill="#8a90b8" font-size="13" font-family="ui-monospace, monospace">loaded into the system prompt at startup</text>
+    <g font-family="ui-monospace, monospace" font-size="15">
+      <text x="20" y="66" fill="#c9a227">---</text>
+      <text x="20" y="92" fill="#7aa2f7">name<tspan fill="#e8e8f0">: pdf-processing</tspan></text>
+      <text x="20" y="118" fill="#7aa2f7">description<tspan fill="#e8e8f0">: Extract text and tables… Use when…</tspan></text>
+      <text x="20" y="140" fill="#c9a227">---</text>
+    </g>
+  </g>
+
+  <g transform="translate(60,290)">
+    <rect width="330" height="80" rx="10" fill="#1e2140"/>
+    <text x="20" y="34" fill="#e8e8f0" font-size="15">~100 tokens per skill</text>
+    <text x="20" y="60" fill="#8a90b8" font-size="13">install many with no context penalty</text>
+    <rect x="350" y="0" width="330" height="80" rx="10" fill="#1e2140"/>
+    <text x="370" y="34" fill="#e8e8f0" font-size="15">Claude only learns</text>
+    <text x="370" y="60" fill="#8a90b8" font-size="13">that it exists and when to use it</text>
+  </g>
+  <text x="40" y="425" fill="#5b6091" font-size="12">Source: Agent Skills Overview (Claude Platform Docs)</text>
+</svg>

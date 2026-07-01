@@ -1,0 +1,32 @@
+<svg viewBox="0 0 800 450" xmlns="http://www.w3.org/2000/svg" font-family="ui-sans-serif, system-ui, sans-serif">
+  <rect width="800" height="450" fill="#0f1226"/>
+  <text x="40" y="56" fill="#e8e8f0" font-size="26" font-weight="700">Keep references one level deep</text>
+  <text x="40" y="86" fill="#8a90b8" font-size="16">Nested links get only partially read</text>
+
+  <g transform="translate(60,120)">
+    <rect width="330" height="270" rx="12" fill="#12152e" stroke="#f0a3a3" stroke-width="1.5"/>
+    <text x="20" y="34" fill="#f0a3a3" font-size="15" font-weight="700">✗ Too deep</text>
+    <g font-size="13.5" font-family="ui-monospace, monospace" fill="#e8e8f0">
+      <text x="20" y="80">SKILL.md</text>
+      <text x="40" y="104" fill="#8a90b8">→ advanced.md</text>
+      <text x="60" y="128" fill="#8a90b8">→ details.md</text>
+      <text x="80" y="152" fill="#8a90b8">→ the actual info</text>
+    </g>
+    <text x="20" y="210" fill="#8a90b8" font-size="12.5">Claude may preview with</text>
+    <text x="20" y="230" fill="#8a90b8" font-size="12.5">head -100 and miss content.</text>
+  </g>
+
+  <g transform="translate(420,120)">
+    <rect width="330" height="270" rx="12" fill="#12152e" stroke="#6ee7b7" stroke-width="2"/>
+    <text x="20" y="34" fill="#6ee7b7" font-size="15" font-weight="700">✓ One level deep</text>
+    <g font-size="13.5" font-family="ui-monospace, monospace" fill="#e8e8f0">
+      <text x="20" y="80">SKILL.md</text>
+      <text x="40" y="104" fill="#a9b0e0">→ advanced.md</text>
+      <text x="40" y="128" fill="#a9b0e0">→ reference.md</text>
+      <text x="40" y="152" fill="#a9b0e0">→ examples.md</text>
+    </g>
+    <text x="20" y="210" fill="#8a90b8" font-size="12.5">All linked directly from</text>
+    <text x="20" y="230" fill="#8a90b8" font-size="12.5">SKILL.md — read in full.</text>
+  </g>
+  <text x="40" y="425" fill="#5b6091" font-size="12">Source: Skill authoring best practices (Claude Platform Docs)</text>
+</svg>

@@ -1,0 +1,201 @@
+{
+  "schema_version": "1.0",
+  "lesson_id": "0005",
+  "slug": "surfaces-and-plugins",
+  "title": "Where Skills Run, and Packaging as Plugins",
+  "mission_ref": "MISSION.md",
+  "objective": "Map the surfaces skills run on and their runtime constraints, the Claude Code extensions to the standard, and how to package and distribute skills as plugins via marketplaces.",
+  "prerequisites": [
+    "0003"
+  ],
+  "estimated_seconds": 275,
+  "voice": {
+    "engine": "kokoro",
+    "lang_code": "a",
+    "voice": "af_heart",
+    "speed": 1.0
+  },
+  "sources": [
+    {
+      "id": "s1",
+      "title": "Agent Skills — Overview (Claude Platform Docs)",
+      "url": "https://platform.claude.com/docs/en/agents-and-tools/agent-skills/overview",
+      "excerpt_ref": "sources/s1.md",
+      "accessed": "2026-07-01",
+      "tier": 1,
+      "trust_rationale": "Anthropic's canonical product documentation for Agent Skills."
+    },
+    {
+      "id": "s5",
+      "title": "Extend Claude with skills (Claude Code Docs)",
+      "url": "https://code.claude.com/docs/en/skills",
+      "excerpt_ref": "sources/s5.md",
+      "accessed": "2026-07-01",
+      "tier": 1,
+      "trust_rationale": "Official Claude Code documentation."
+    },
+    {
+      "id": "s6",
+      "title": "Create plugins (Claude Code Docs)",
+      "url": "https://code.claude.com/docs/en/plugins",
+      "excerpt_ref": "sources/s6.md",
+      "accessed": "2026-07-01",
+      "tier": 1,
+      "trust_rationale": "Official Claude Code plugins documentation."
+    }
+  ],
+  "beats": [
+    {
+      "id": "b1",
+      "type": "narration",
+      "narration": "The same skill format runs across three surfaces, but how you install it differs. On claude.ai you upload custom skills as a zip through Settings and Features, and they're personal to you. In Claude Code, skills are just filesystem directories — no upload at all. On the Claude API, you reference a skill_id in the container parameter, and custom skills are uploaded through the skills endpoints and shared across the whole workspace.",
+      "audio": "assets/audio/0005-b1.wav",
+      "visual": {
+        "kind": "svg_file",
+        "src": "assets/visuals/0005-b1.svg",
+        "alt": "Three surface cards: claude.ai, Claude Code, and the Claude API with their upload models"
+      },
+      "citations": [
+        "s1"
+      ],
+      "audio_duration_s": 25.64
+    },
+    {
+      "id": "b2",
+      "type": "narration",
+      "narration": "Crucially, the runtime powers differ too, and this catches people out. On the Claude API a skill has no network access and cannot install packages at run time — only pre-installed ones work. On claude.ai, network access varies with user and admin settings. In Claude Code, a skill has full network access, like any program on your computer, though you're advised to install packages locally rather than globally.",
+      "audio": "assets/audio/0005-b2.wav",
+      "visual": {
+        "kind": "svg_file",
+        "src": "assets/visuals/0005-b2.svg",
+        "alt": "Runtime constraints per surface: claude.ai varies, API has no network, Claude Code full network"
+      },
+      "citations": [
+        "s1"
+      ],
+      "audio_duration_s": 25.75
+    },
+    {
+      "id": "b3",
+      "type": "quiz",
+      "format": "single_choice",
+      "narration_intro": "A constraint you must design around.",
+      "audio_intro": "assets/audio/0005-b3-intro.wav",
+      "prompt": "On which surface can a skill NOT access the network or install packages at runtime?",
+      "options": [
+        {
+          "id": "a",
+          "text": "The Claude API"
+        },
+        {
+          "id": "b",
+          "text": "Claude Code on your machine"
+        },
+        {
+          "id": "c",
+          "text": "Every surface allows both freely"
+        }
+      ],
+      "answer": "a",
+      "correct_feedback": "Correct. On the Claude API there's no network access and no runtime package installation.",
+      "audio_correct": "assets/audio/0005-b3-correct.wav",
+      "incorrect_feedback": "Not quite. It's the Claude API: there a skill has no network access and cannot install packages at runtime.",
+      "audio_incorrect": "assets/audio/0005-b3-incorrect.wav",
+      "citations": [
+        "s1"
+      ]
+    },
+    {
+      "id": "b4",
+      "type": "narration",
+      "narration": "Claude Code skills follow the Agent Skills open standard, then add extra controls. You can set disable-model-invocation to true so only you can run a skill — perfect for a deploy or commit command you don't want triggered automatically. You can set user-invocable to false for background knowledge only Claude should reach for. Allowed-tools pre-approves specific tools, and context fork runs the skill in an isolated subagent. There's even dynamic injection, where a shell command runs before Claude sees the skill.",
+      "audio": "assets/audio/0005-b4.wav",
+      "visual": {
+        "kind": "svg_file",
+        "src": "assets/visuals/0005-b4.svg",
+        "alt": "Claude Code frontmatter extensions like disable-model-invocation, allowed-tools, and context fork"
+      },
+      "citations": [
+        "s5"
+      ],
+      "audio_duration_s": 29.87
+    },
+    {
+      "id": "b5",
+      "type": "narration",
+      "narration": "Now, packaging. In Claude Code you have a choice: a standalone skill in a dot-claude directory, or a plugin. Standalone is right for personal, project-specific work and quick experiments, and gives you a short name like slash hello. A plugin is right when you want to share with a team or community, reuse across projects, and ship versioned releases. The tradeoff is that plugin skills are namespaced, like slash my-plugin colon hello, which is exactly what prevents naming conflicts.",
+      "audio": "assets/audio/0005-b5.wav",
+      "visual": {
+        "kind": "svg_file",
+        "src": "assets/visuals/0005-b5.svg",
+        "alt": "Standalone versus plugin, with short names versus namespaced names"
+      },
+      "citations": [
+        "s6"
+      ],
+      "audio_duration_s": 28.44
+    },
+    {
+      "id": "b6",
+      "type": "narration",
+      "narration": "A plugin is a directory with a manifest at dot-claude-plugin slash plugin.json, declaring a name — which becomes the skill namespace — plus a description and an optional version. The components live at the plugin root, not inside dot-claude-plugin: a skills folder, agents, hooks, a dot-mcp.json for MCP servers, even LSP servers. That last point is the common mistake — only plugin.json goes inside the dot-claude-plugin folder; everything else sits at the root.",
+      "audio": "assets/audio/0005-b6.wav",
+      "visual": {
+        "kind": "svg_file",
+        "src": "assets/visuals/0005-b6.svg",
+        "alt": "A plugin directory tree next to a minimal plugin.json manifest"
+      },
+      "citations": [
+        "s6"
+      ],
+      "audio_duration_s": 28.89
+    },
+    {
+      "id": "b7",
+      "type": "narration",
+      "narration": "To share a plugin, you distribute it through a marketplace — a repository with a marketplace.json that others add to Claude Code. You test locally with claude plugin-dir pointing at your folder, and run claude plugin validate before submitting. Anthropic runs two public marketplaces: a curated official one, and a community one where third-party submissions land after review, pinned to a specific commit. For team-only distribution, you just host the marketplace in a private repository.",
+      "audio": "assets/audio/0005-b7.wav",
+      "visual": {
+        "kind": "svg_file",
+        "src": "assets/visuals/0005-b7.svg",
+        "alt": "Local testing commands and the two Anthropic marketplaces"
+      },
+      "citations": [
+        "s6"
+      ],
+      "audio_duration_s": 29.31
+    },
+    {
+      "id": "b8",
+      "type": "quiz",
+      "format": "single_choice",
+      "narration_intro": "Last one for this lesson.",
+      "audio_intro": "assets/audio/0005-b8-intro.wav",
+      "prompt": "Why are a plugin's skills namespaced as plugin-name:skill-name?",
+      "options": [
+        {
+          "id": "a",
+          "text": "To prevent naming conflicts between plugins"
+        },
+        {
+          "id": "b",
+          "text": "Because plugins cannot contain more than one skill"
+        },
+        {
+          "id": "c",
+          "text": "Because standalone skills are entirely forbidden"
+        }
+      ],
+      "answer": "a",
+      "correct_feedback": "Right. Namespacing keeps same-named skills from different plugins from colliding.",
+      "audio_correct": "assets/audio/0005-b8-correct.wav",
+      "incorrect_feedback": "Not quite. Plugin skills are namespaced as plugin-name colon skill-name to prevent naming conflicts between different plugins.",
+      "audio_incorrect": "assets/audio/0005-b8-incorrect.wav",
+      "citations": [
+        "s6"
+      ]
+    }
+  ],
+  "created": "2026-07-01T00:00:00Z",
+  "generated_by": "teach-me 0.1"
+}

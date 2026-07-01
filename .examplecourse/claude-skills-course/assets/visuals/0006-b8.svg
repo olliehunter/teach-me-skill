@@ -1,0 +1,23 @@
+<svg viewBox="0 0 800 450" xmlns="http://www.w3.org/2000/svg" font-family="ui-sans-serif, system-ui, sans-serif">
+  <rect width="800" height="450" fill="#0f1226"/>
+  <text x="40" y="52" fill="#e8e8f0" font-size="26" font-weight="700">Three packaging paths, compared</text>
+  <text x="40" y="80" fill="#8a90b8" font-size="15">They solve different problems — don't conflate them</text>
+
+  <g transform="translate(50,100)">
+    <rect width="700" height="90" rx="12" fill="#1e2140" stroke="#6ee7b7" stroke-width="1.5"/>
+    <text x="20" y="32" fill="#6ee7b7" font-size="16" font-weight="700">Skill</text>
+    <text x="20" y="60" fill="#e8e8f0" font-size="13.5">Teaches Claude a procedure. A folder + SKILL.md. Instructions, not a running service.</text>
+    <text x="20" y="80" fill="#8a90b8" font-size="12.5">Ship via: zip (claude.ai), filesystem (Claude Code), /v1/skills (API).</text>
+
+    <rect y="100" width="700" height="90" rx="12" fill="#1e2140" stroke="#7aa2f7" stroke-width="1.5"/>
+    <text x="20" y="132" fill="#7aa2f7" font-size="16" font-weight="700">Plugin (Claude Code)</text>
+    <text x="20" y="160" fill="#e8e8f0" font-size="13.5">Bundles skills + agents + hooks + MCP/LSP for one client. plugin.json + marketplace.</text>
+    <text x="20" y="180" fill="#8a90b8" font-size="12.5">Best for sharing a whole toolkit inside Claude Code.</text>
+
+    <rect y="200" width="700" height="90" rx="12" fill="#1e2140" stroke="#c9a227" stroke-width="1.5"/>
+    <text x="20" y="232" fill="#c9a227" font-size="16" font-weight="700">MCPB bundle</text>
+    <text x="20" y="260" fill="#e8e8f0" font-size="13.5">Packages a running local MCP server for one-click install across any MCP client.</text>
+    <text x="20" y="280" fill="#8a90b8" font-size="12.5">ZIP + manifest.json. Formerly DXT; now governed by the MCP project.</text>
+  </g>
+  <text x="40" y="428" fill="#5b6091" font-size="12">Sources: Agent Skills Overview · Create plugins · Adopting the MCP Bundle format</text>
+</svg>

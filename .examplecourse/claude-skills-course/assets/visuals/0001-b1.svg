@@ -1,0 +1,35 @@
+<svg viewBox="0 0 800 450" xmlns="http://www.w3.org/2000/svg" font-family="ui-sans-serif, system-ui, sans-serif">
+  <rect width="800" height="450" fill="#0f1226"/>
+  <text x="40" y="56" fill="#e8e8f0" font-size="26" font-weight="700">A skill is a folder with a SKILL.md</text>
+  <text x="40" y="86" fill="#8a90b8" font-size="16">Like an onboarding guide you hand a new hire</text>
+
+  <!-- folder -->
+  <g transform="translate(60,130)">
+    <path d="M0 20 h70 l16 -16 h120 a10 10 0 0 1 10 10 v200 a10 10 0 0 1 -10 10 H0 a10 10 0 0 1 -10 -10 V30 a10 10 0 0 1 10 -10 z" fill="#1e2140" stroke="#c9a227" stroke-width="2"/>
+    <text x="108" y="60" fill="#c9a227" font-size="16" font-weight="700" text-anchor="middle">pdf/</text>
+    <g font-size="14" fill="#e8e8f0">
+      <rect x="18" y="80" width="180" height="30" rx="6" fill="#2a2e52"/>
+      <text x="30" y="100">📄 SKILL.md</text>
+      <rect x="18" y="120" width="180" height="26" rx="6" fill="#232748"/>
+      <text x="30" y="138" fill="#a9b0e0">FORMS.md</text>
+      <rect x="18" y="152" width="180" height="26" rx="6" fill="#232748"/>
+      <text x="30" y="170" fill="#a9b0e0">reference.md</text>
+      <rect x="18" y="184" width="180" height="26" rx="6" fill="#232748"/>
+      <text x="30" y="202" fill="#a9b0e0">scripts/</text>
+    </g>
+  </g>
+
+  <!-- arrow -->
+  <text x="330" y="245" fill="#6ee7b7" font-size="30">→</text>
+
+  <!-- claude -->
+  <g transform="translate(400,140)">
+    <rect x="0" y="0" width="320" height="180" rx="14" fill="#1e2140" stroke="#7aa2f7" stroke-width="2"/>
+    <text x="20" y="34" fill="#7aa2f7" font-size="16" font-weight="700">Claude, now specialised</text>
+    <text x="20" y="70" fill="#e8e8f0" font-size="14">instructions  ·  metadata</text>
+    <text x="20" y="98" fill="#e8e8f0" font-size="14">optional scripts  ·  resources</text>
+    <text x="20" y="140" fill="#8a90b8" font-size="13">"Skills package your expertise into</text>
+    <text x="20" y="160" fill="#8a90b8" font-size="13">composable resources for Claude."</text>
+  </g>
+  <text x="40" y="420" fill="#5b6091" font-size="12">Source: Anthropic Engineering — Agent Skills</text>
+</svg>

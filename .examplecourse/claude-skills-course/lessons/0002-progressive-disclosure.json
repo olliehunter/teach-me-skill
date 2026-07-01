@@ -1,0 +1,203 @@
+{
+  "schema_version": "1.0",
+  "lesson_id": "0002",
+  "slug": "progressive-disclosure",
+  "title": "Progressive Disclosure and the Context Window",
+  "mission_ref": "MISSION.md",
+  "objective": "Explain progressive disclosure: why context is scarce, the three loading levels, and the filesystem architecture that makes bundled content effectively unbounded.",
+  "prerequisites": [
+    "0001"
+  ],
+  "estimated_seconds": 230,
+  "voice": {
+    "engine": "kokoro",
+    "lang_code": "a",
+    "voice": "af_heart",
+    "speed": 1.0
+  },
+  "sources": [
+    {
+      "id": "s1",
+      "title": "Agent Skills — Overview (Claude Platform Docs)",
+      "url": "https://platform.claude.com/docs/en/agents-and-tools/agent-skills/overview",
+      "excerpt_ref": "sources/s1.md",
+      "accessed": "2026-07-01",
+      "tier": 1,
+      "trust_rationale": "Anthropic's canonical product documentation for Agent Skills."
+    },
+    {
+      "id": "s2",
+      "title": "Skill authoring best practices (Claude Platform Docs)",
+      "url": "https://platform.claude.com/docs/en/agents-and-tools/agent-skills/best-practices",
+      "excerpt_ref": "sources/s2.md",
+      "accessed": "2026-07-01",
+      "tier": 1,
+      "trust_rationale": "Anthropic's official authoring guidance."
+    },
+    {
+      "id": "s3",
+      "title": "Equipping agents for the real world with Agent Skills (Anthropic Engineering)",
+      "url": "https://www.anthropic.com/engineering/equipping-agents-for-the-real-world-with-agent-skills",
+      "excerpt_ref": "sources/s3.md",
+      "accessed": "2026-07-01",
+      "tier": 1,
+      "trust_rationale": "Anthropic's own engineering blog explaining the design."
+    }
+  ],
+  "beats": [
+    {
+      "id": "b1",
+      "type": "narration",
+      "narration": "Before the mechanics, the constraint that shapes everything: the context window is a public good. Your skill shares it with the system prompt, the conversation history, every other skill's metadata, and the user's actual request. Tokens spent on one thing aren't available for another. So the design question is: how do we give Claude deep expertise without paying for all of it upfront?",
+      "audio": "assets/audio/0002-b1.wav",
+      "visual": {
+        "kind": "svg_file",
+        "src": "assets/visuals/0002-b1.svg",
+        "alt": "A context window box shared between system prompt, history, skill metadata, and the request"
+      },
+      "citations": [
+        "s2"
+      ],
+      "audio_duration_s": 22.74
+    },
+    {
+      "id": "b2",
+      "type": "narration",
+      "narration": "The answer is progressive disclosure: Claude loads a skill in stages. Think of a well-organised manual — a table of contents, then specific chapters, then a detailed appendix. There are three levels. Level one is metadata. Level two is the instructions. Level three and beyond are bundled resources and code. Each loads at a different moment.",
+      "audio": "assets/audio/0002-b2.wav",
+      "visual": {
+        "kind": "svg_file",
+        "src": "assets/visuals/0002-b2.svg",
+        "alt": "Three stacked levels: metadata, instructions, and resources and code"
+      },
+      "citations": [
+        "s1",
+        "s3"
+      ],
+      "audio_duration_s": 21.7
+    },
+    {
+      "id": "b3",
+      "type": "narration",
+      "narration": "Level one is the YAML frontmatter — name and description. It's loaded at startup, into the system prompt, for every installed skill, at roughly a hundred tokens each. That's the whole trick behind installing many skills at once: Claude only learns that each skill exists and when to use it. Nothing heavier is loaded until it's actually wanted.",
+      "audio": "assets/audio/0002-b3.wav",
+      "visual": {
+        "kind": "svg_file",
+        "src": "assets/visuals/0002-b3.svg",
+        "alt": "Frontmatter loaded into the system prompt at about 100 tokens per skill"
+      },
+      "citations": [
+        "s1"
+      ],
+      "audio_duration_s": 20.54
+    },
+    {
+      "id": "b4",
+      "type": "narration",
+      "narration": "Level two is the body of SKILL.md. When your request matches a skill's description, Claude reads that file from the filesystem using bash, and only then do its instructions enter the context window. The guidance is to keep it under about five thousand tokens. Until a task matches, the body just sits on disk, costing nothing.",
+      "audio": "assets/audio/0002-b4.wav",
+      "visual": {
+        "kind": "svg_file",
+        "src": "assets/visuals/0002-b4.svg",
+        "alt": "A matching request causes bash to read SKILL.md into context, under 5k tokens"
+      },
+      "citations": [
+        "s1"
+      ],
+      "audio_duration_s": 21.1
+    },
+    {
+      "id": "b5",
+      "type": "quiz",
+      "format": "single_choice",
+      "narration_intro": "Check your model of this.",
+      "audio_intro": "assets/audio/0002-b5-intro.wav",
+      "prompt": "Which part of a skill is always loaded into context at startup?",
+      "options": [
+        {
+          "id": "a",
+          "text": "The name and description metadata only"
+        },
+        {
+          "id": "b",
+          "text": "The entire SKILL.md body and files"
+        },
+        {
+          "id": "c",
+          "text": "Every bundled script's full source"
+        }
+      ],
+      "answer": "a",
+      "correct_feedback": "Correct. Only the metadata is preloaded; the body and files load later, on demand.",
+      "audio_correct": "assets/audio/0002-b5-correct.wav",
+      "incorrect_feedback": "Not quite. Only the name and description metadata is preloaded at startup; the body and bundled files load later, on demand.",
+      "audio_incorrect": "assets/audio/0002-b5-incorrect.wav",
+      "citations": [
+        "s1"
+      ]
+    },
+    {
+      "id": "b6",
+      "type": "narration",
+      "narration": "Level three is where it gets powerful. A skill can bundle extra Markdown files, reference material, datasets, and scripts. Files are read only when referenced. Scripts are executed via bash — and crucially, the script's code never enters context; only its output does. That's why a skill can carry comprehensive API docs or large datasets with no penalty until they're touched.",
+      "audio": "assets/audio/0002-b6.wav",
+      "visual": {
+        "kind": "svg_file",
+        "src": "assets/visuals/0002-b6.svg",
+        "alt": "Bundled files and scripts on disk, with only the needed file and a script's output entering context"
+      },
+      "citations": [
+        "s1",
+        "s3"
+      ],
+      "audio_duration_s": 23.96
+    },
+    {
+      "id": "b7",
+      "type": "narration",
+      "narration": "Underneath all of this is one architectural fact: skills run in a code execution environment where Claude has a filesystem, bash, and code execution. Claude navigates your skill directory the way you'd reference specific sections of an onboarding guide — reading exactly what each task requires. That filesystem model is precisely what makes progressive disclosure possible.",
+      "audio": "assets/audio/0002-b7.wav",
+      "visual": {
+        "kind": "svg_file",
+        "src": "assets/visuals/0002-b7.svg",
+        "alt": "A code execution environment with filesystem, bash, and code execution capabilities"
+      },
+      "citations": [
+        "s1"
+      ],
+      "audio_duration_s": 23.34
+    },
+    {
+      "id": "b8",
+      "type": "quiz",
+      "format": "single_choice",
+      "narration_intro": "Last one for this lesson.",
+      "audio_intro": "assets/audio/0002-b8-intro.wav",
+      "prompt": "Why can a skill bundle effectively unlimited reference content?",
+      "options": [
+        {
+          "id": "a",
+          "text": "Bundled files cost no tokens until Claude actually reads them"
+        },
+        {
+          "id": "b",
+          "text": "The context window has no size limit in practice"
+        },
+        {
+          "id": "c",
+          "text": "All bundled files are compressed away entirely"
+        }
+      ],
+      "answer": "a",
+      "correct_feedback": "Right. Files stay on disk at zero token cost until referenced, so bundled content is effectively unbounded.",
+      "audio_correct": "assets/audio/0002-b8-correct.wav",
+      "incorrect_feedback": "Not quite. It's because bundled files cost no tokens until Claude actually reads them — they sit on disk until a task needs them.",
+      "audio_incorrect": "assets/audio/0002-b8-incorrect.wav",
+      "citations": [
+        "s3"
+      ]
+    }
+  ],
+  "created": "2026-07-01T00:00:00Z",
+  "generated_by": "teach-me 0.1"
+}

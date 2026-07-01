@@ -1,0 +1,33 @@
+{
+  "schema_version": "1.0",
+  "title": "Creating Claude Agent Skills: From SKILL.md to MCPB",
+  "mission_ref": "MISSION.md",
+  "voice": { "engine": "kokoro", "lang_code": "a", "voice": "af_heart", "speed": 1.0 },
+  "lessons": [
+    { "lesson_id": "0001", "slug": "what-a-skill-is", "title": "What an Agent Skill Is", "status": "ready" },
+    { "lesson_id": "0002", "slug": "progressive-disclosure", "title": "Progressive Disclosure and the Context Window", "status": "ready" },
+    { "lesson_id": "0003", "slug": "writing-skill-md", "title": "Writing a SKILL.md That Triggers", "status": "ready" },
+    { "lesson_id": "0004", "slug": "advanced-authoring", "title": "Advanced Authoring: Files, Scripts, and Evals", "status": "ready" },
+    { "lesson_id": "0005", "slug": "surfaces-and-plugins", "title": "Where Skills Run, and Packaging as Plugins", "status": "ready" },
+    { "lesson_id": "0006", "slug": "mcpb-packaging", "title": "MCPB: Packaging Local MCP Servers", "status": "ready" }
+  ],
+  "coverage": {
+    "covered": [
+      "What an Agent Skill is and why it differs from a prompt",
+      "Progressive disclosure and the three loading levels",
+      "SKILL.md frontmatter rules, naming, and writing descriptions that trigger",
+      "Authoring craft: conciseness, degrees of freedom, bundled files, utility scripts, workflows, and evaluation-driven development",
+      "Where Skills run (claude.ai, Claude Code, API) and their runtime constraints",
+      "Claude Code's extensions to the standard (invocation control, allowed-tools, context: fork, dynamic injection)",
+      "Packaging and distributing skills as Claude Code plugins and via marketplaces",
+      "MCPB bundles: the manifest.json, server types, user_config, the mcpb CLI, and how MCPB relates to Skills and Plugins"
+    ],
+    "excluded": [
+      { "topic": "Building an MCP server from scratch (protocol internals, transports, SDK APIs)", "reason": "Out of the mission's scope; the course covers only what packaging an existing server requires. See the modelcontextprotocol/mcpb examples and MCP docs." },
+      { "topic": "Full mechanics of the Claude API Skills endpoints and the Claude Agent SDK", "reason": "Deliberately out of scope per the mission; the course states where skills are uploaded but does not walk the /v1/skills API in depth." },
+      { "topic": "A complete runnable end-to-end MCPB example project", "reason": "No single Tier 1/2 source provides one inline; the manifest and CLI are taught accurately and the course points to the official mcpb examples directory." }
+    ]
+  },
+  "created": "2026-07-01T00:00:00Z",
+  "generated_by": "teach-me 0.1"
+}

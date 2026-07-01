@@ -1,0 +1,36 @@
+<svg viewBox="0 0 800 450" xmlns="http://www.w3.org/2000/svg" font-family="ui-sans-serif, system-ui, sans-serif">
+  <rect width="800" height="450" fill="#0f1226"/>
+  <text x="40" y="56" fill="#e8e8f0" font-size="26" font-weight="700">Three surfaces, same format</text>
+  <text x="40" y="86" fill="#8a90b8" font-size="16">Where skills run — and how you get them there</text>
+
+  <g transform="translate(45,120)">
+    <rect width="230" height="260" rx="14" fill="#1e2140" stroke="#7aa2f7" stroke-width="2"/>
+    <text x="115" y="40" fill="#7aa2f7" font-size="17" font-weight="700" text-anchor="middle">claude.ai</text>
+    <text x="20" y="80" fill="#e8e8f0" font-size="13">pre-built + custom</text>
+    <text x="20" y="106" fill="#8a90b8" font-size="12.5">upload zip via</text>
+    <text x="20" y="124" fill="#8a90b8" font-size="12.5">Settings › Features</text>
+    <text x="20" y="160" fill="#8a90b8" font-size="12.5">per-user; not</text>
+    <text x="20" y="178" fill="#8a90b8" font-size="12.5">org-managed</text>
+  </g>
+
+  <g transform="translate(285,120)">
+    <rect width="230" height="260" rx="14" fill="#1e2140" stroke="#6ee7b7" stroke-width="2"/>
+    <text x="115" y="40" fill="#6ee7b7" font-size="17" font-weight="700" text-anchor="middle">Claude Code</text>
+    <text x="20" y="80" fill="#e8e8f0" font-size="13">custom only</text>
+    <text x="20" y="106" fill="#8a90b8" font-size="12.5">filesystem dirs,</text>
+    <text x="20" y="124" fill="#8a90b8" font-size="12.5">no API upload</text>
+    <text x="20" y="160" fill="#8a90b8" font-size="12.5">personal / project</text>
+    <text x="20" y="178" fill="#8a90b8" font-size="12.5">/ plugin scopes</text>
+  </g>
+
+  <g transform="translate(525,120)">
+    <rect width="230" height="260" rx="14" fill="#1e2140" stroke="#c9a227" stroke-width="2"/>
+    <text x="115" y="40" fill="#c9a227" font-size="17" font-weight="700" text-anchor="middle">Claude API</text>
+    <text x="20" y="80" fill="#e8e8f0" font-size="13">pre-built + custom</text>
+    <text x="20" y="106" fill="#8a90b8" font-size="12.5">skill_id in the</text>
+    <text x="20" y="124" fill="#8a90b8" font-size="12.5">container param</text>
+    <text x="20" y="160" fill="#8a90b8" font-size="12.5">upload via /v1/skills</text>
+    <text x="20" y="178" fill="#8a90b8" font-size="12.5">workspace-wide</text>
+  </g>
+  <text x="40" y="420" fill="#5b6091" font-size="12">Source: Agent Skills Overview (Claude Platform Docs)</text>
+</svg>

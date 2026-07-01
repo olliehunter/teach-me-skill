@@ -1,0 +1,20 @@
+<svg viewBox="0 0 800 450" xmlns="http://www.w3.org/2000/svg" font-family="ui-sans-serif, system-ui, sans-serif">
+  <rect width="800" height="450" fill="#0f1226"/>
+  <text x="40" y="56" fill="#e8e8f0" font-size="26" font-weight="700">What makes it all work</text>
+  <text x="40" y="86" fill="#8a90b8" font-size="16">Skills live on a filesystem Claude navigates with bash</text>
+
+  <g transform="translate(60,120)">
+    <rect width="680" height="240" rx="14" fill="#12152e" stroke="#3a3f6b" stroke-width="1.5"/>
+    <text x="24" y="40" fill="#7aa2f7" font-size="16" font-weight="700">code execution environment</text>
+    <g font-size="15" fill="#e8e8f0">
+      <circle cx="40" cy="82" r="5" fill="#6ee7b7"/><text x="60" y="87">filesystem access</text>
+      <circle cx="40" cy="122" r="5" fill="#6ee7b7"/><text x="60" y="127">bash commands</text>
+      <circle cx="40" cy="162" r="5" fill="#6ee7b7"/><text x="60" y="167">code execution</text>
+    </g>
+    <text x="360" y="90" fill="#8a90b8" font-size="14">Claude reads exactly the files</text>
+    <text x="360" y="114" fill="#8a90b8" font-size="14">a task needs — like flipping to</text>
+    <text x="360" y="138" fill="#8a90b8" font-size="14">the right chapter of a manual,</text>
+    <text x="360" y="162" fill="#8a90b8" font-size="14">not reading it cover to cover.</text>
+  </g>
+  <text x="40" y="420" fill="#5b6091" font-size="12">Source: Agent Skills Overview (Claude Platform Docs)</text>
+</svg>

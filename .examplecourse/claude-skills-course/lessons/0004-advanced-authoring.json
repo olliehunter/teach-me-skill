@@ -1,0 +1,180 @@
+{
+  "schema_version": "1.0",
+  "lesson_id": "0004",
+  "slug": "advanced-authoring",
+  "title": "Advanced Authoring: Files, Scripts, and Evals",
+  "mission_ref": "MISSION.md",
+  "objective": "Apply the craft that separates a real skill from a wordy one: bundled files one level deep, utility scripts, workflows and feedback loops, and evaluation-driven development.",
+  "prerequisites": [
+    "0002",
+    "0003"
+  ],
+  "estimated_seconds": 250,
+  "voice": {
+    "engine": "kokoro",
+    "lang_code": "a",
+    "voice": "af_heart",
+    "speed": 1.0
+  },
+  "sources": [
+    {
+      "id": "s2",
+      "title": "Skill authoring best practices (Claude Platform Docs)",
+      "url": "https://platform.claude.com/docs/en/agents-and-tools/agent-skills/best-practices",
+      "excerpt_ref": "sources/s2.md",
+      "accessed": "2026-07-01",
+      "tier": 1,
+      "trust_rationale": "Anthropic's official authoring guidance."
+    },
+    {
+      "id": "s3",
+      "title": "Equipping agents for the real world with Agent Skills (Anthropic Engineering)",
+      "url": "https://www.anthropic.com/engineering/equipping-agents-for-the-real-world-with-agent-skills",
+      "excerpt_ref": "sources/s3.md",
+      "accessed": "2026-07-01",
+      "tier": 1,
+      "trust_rationale": "Anthropic's own engineering blog explaining the design."
+    }
+  ],
+  "beats": [
+    {
+      "id": "b1",
+      "type": "narration",
+      "narration": "When a SKILL.md starts getting unwieldy — the guidance is to keep the body under about five hundred lines — split it. Move form-filling into FORMS.md, the full API into reference.md, examples into their own file, and scripts into a scripts folder. The SKILL.md becomes a lean table of contents, and Claude reads each piece only when the task calls for it.",
+      "audio": "assets/audio/0004-b1.wav",
+      "visual": {
+        "kind": "svg_file",
+        "src": "assets/visuals/0004-b1.svg",
+        "alt": "A skill directory with SKILL.md plus bundled reference files and a scripts folder"
+      },
+      "citations": [
+        "s2",
+        "s3"
+      ],
+      "audio_duration_s": 23.19
+    },
+    {
+      "id": "b2",
+      "type": "narration",
+      "narration": "There's a subtle trap here: keep references one level deep from SKILL.md. If a file points to another file that points to a third, Claude may only partially read the chain — previewing with something like head minus one hundred — and miss content. So link every reference file directly from SKILL.md. And for any reference longer than a hundred lines, add a table of contents at the top so Claude sees the full scope even on a partial read.",
+      "audio": "assets/audio/0004-b2.wav",
+      "visual": {
+        "kind": "svg_file",
+        "src": "assets/visuals/0004-b2.svg",
+        "alt": "A too-deep nested reference chain versus references all one level deep"
+      },
+      "citations": [
+        "s2"
+      ],
+      "audio_duration_s": 25.22
+    },
+    {
+      "id": "b3",
+      "type": "narration",
+      "narration": "Scripts deserve real care. A pre-written utility script is more reliable than code Claude generates on the fly, it's deterministic, and it saves tokens because the code never enters context — only its output does. Two rules: solve, don't punt — handle errors inside the script rather than failing for Claude to sort out — and make intent explicit, saying run this script to execute, or see this script for the algorithm to read it as reference.",
+      "audio": "assets/audio/0004-b3.wav",
+      "visual": {
+        "kind": "svg_file",
+        "src": "assets/visuals/0004-b3.svg",
+        "alt": "Reasons to prewrite scripts and the solve-dont-punt principle"
+      },
+      "citations": [
+        "s2"
+      ],
+      "audio_duration_s": 26.05
+    },
+    {
+      "id": "b4",
+      "type": "narration",
+      "narration": "For anything multi-step, structure it as a workflow. Give Claude a checklist it can copy and tick off, so it doesn't skip a critical step like validation. Even better, build a feedback loop: run a validator, fix the errors it reports, repeat until it passes. The validator can be a script, or it can just be a STYLE_GUIDE that Claude checks its own draft against. Either way, quality goes up sharply.",
+      "audio": "assets/audio/0004-b4.wav",
+      "visual": {
+        "kind": "svg_file",
+        "src": "assets/visuals/0004-b4.svg",
+        "alt": "A copyable checklist and a run-validator, fix, repeat feedback loop"
+      },
+      "citations": [
+        "s2"
+      ],
+      "audio_duration_s": 22.83
+    },
+    {
+      "id": "b5",
+      "type": "quiz",
+      "format": "single_choice",
+      "narration_intro": "A structure question.",
+      "audio_intro": "assets/audio/0004-b5-intro.wav",
+      "prompt": "Why should bundled reference files link directly from SKILL.md rather than chaining through each other?",
+      "options": [
+        {
+          "id": "a",
+          "text": "Claude may only partially read nested files and miss content"
+        },
+        {
+          "id": "b",
+          "text": "Deep nesting is forbidden by the file format itself"
+        },
+        {
+          "id": "c",
+          "text": "Nested files always load fully into context at startup"
+        }
+      ],
+      "answer": "a",
+      "correct_feedback": "Correct. Nested references risk partial reads, so keep everything one level deep from SKILL.md.",
+      "audio_correct": "assets/audio/0004-b5-correct.wav",
+      "incorrect_feedback": "Not quite. It's because Claude may only partially read nested files and miss content, so keep every reference one level deep from SKILL.md.",
+      "audio_incorrect": "assets/audio/0004-b5-incorrect.wav",
+      "citations": [
+        "s2"
+      ]
+    },
+    {
+      "id": "b6",
+      "type": "narration",
+      "narration": "Finally, how you develop a skill matters as much as how you write it. Anthropic's advice is to build evaluations before extensive documentation: run Claude on real tasks with no skill, note where it fails, and write just enough to fix those gaps. A powerful pattern is two Claudes — Claude A helps you author and refine the skill, while a fresh Claude B tests it on real tasks. You watch Claude B, then bring the gaps back to Claude A.",
+      "audio": "assets/audio/0004-b6.wav",
+      "visual": {
+        "kind": "svg_file",
+        "src": "assets/visuals/0004-b6.svg",
+        "alt": "The five-step evaluation-driven development loop with Claude A authoring and Claude B testing"
+      },
+      "citations": [
+        "s2",
+        "s3"
+      ],
+      "audio_duration_s": 25.11
+    },
+    {
+      "id": "b7",
+      "type": "quiz",
+      "format": "single_choice",
+      "narration_intro": "Last check for this lesson.",
+      "audio_intro": "assets/audio/0004-b7-intro.wav",
+      "prompt": "What does evaluation-driven development recommend doing first?",
+      "options": [
+        {
+          "id": "a",
+          "text": "Find real gaps and build evals before writing extensive docs"
+        },
+        {
+          "id": "b",
+          "text": "Write the complete documentation, then test at the very end"
+        },
+        {
+          "id": "c",
+          "text": "Ship the skill immediately and gather feedback in production"
+        }
+      ],
+      "answer": "a",
+      "correct_feedback": "Right. Identify gaps and create evaluations first, so the skill solves real problems.",
+      "audio_correct": "assets/audio/0004-b7-correct.wav",
+      "incorrect_feedback": "Not quite. Evaluation-driven development says to find real gaps and build evaluations first, before writing extensive documentation.",
+      "audio_incorrect": "assets/audio/0004-b7-incorrect.wav",
+      "citations": [
+        "s2"
+      ]
+    }
+  ],
+  "created": "2026-07-01T00:00:00Z",
+  "generated_by": "teach-me 0.1"
+}

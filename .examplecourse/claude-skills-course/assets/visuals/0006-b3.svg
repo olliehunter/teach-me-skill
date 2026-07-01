@@ -1,0 +1,22 @@
+<svg viewBox="0 0 800 450" xmlns="http://www.w3.org/2000/svg" font-family="ui-sans-serif, system-ui, sans-serif">
+  <rect width="800" height="450" fill="#0f1226"/>
+  <text x="40" y="52" fill="#e8e8f0" font-size="26" font-weight="700">Inside manifest.json</text>
+  <text x="40" y="80" fill="#8a90b8" font-size="15">Required metadata plus a server block</text>
+
+  <g transform="translate(60,100)" font-family="ui-monospace, monospace" font-size="13.5">
+    <rect width="680" height="290" rx="12" fill="#12152e" stroke="#3a3f6b" stroke-width="1.5"/>
+    <text x="20" y="36" fill="#e8e8f0">{</text>
+    <text x="20" y="60" fill="#7aa2f7">  "manifest_version"<tspan fill="#e8e8f0">: "0.3",</tspan></text>
+    <text x="20" y="84" fill="#7aa2f7">  "name"<tspan fill="#e8e8f0">: "my-extension",</tspan></text>
+    <text x="20" y="108" fill="#7aa2f7">  "version"<tspan fill="#e8e8f0">: "1.0.0",</tspan></text>
+    <text x="20" y="132" fill="#7aa2f7">  "description"<tspan fill="#e8e8f0">: "A simple MCP extension",</tspan></text>
+    <text x="20" y="156" fill="#7aa2f7">  "author"<tspan fill="#e8e8f0">: { "name": "Extension Author" },</tspan></text>
+    <text x="20" y="180" fill="#7aa2f7">  "server"<tspan fill="#e8e8f0">: {</tspan></text>
+    <text x="20" y="204" fill="#e8e8f0">    "type": "node",</text>
+    <text x="20" y="228" fill="#e8e8f0">    "entry_point": "server/index.js",</text>
+    <text x="20" y="252" fill="#e8e8f0">    "mcp_config": { "command": "node",</text>
+    <text x="20" y="272" fill="#e8e8f0">      "args": ["${__dirname}/server/index.js"] } }</text>
+  </g>
+  <text x="470" y="60" fill="#c9a227" font-size="12">← 6 required fields</text>
+  <text x="40" y="425" fill="#5b6091" font-size="12">Source: MCPB Manifest.json Spec v0.3 (modelcontextprotocol/mcpb)</text>
+</svg>

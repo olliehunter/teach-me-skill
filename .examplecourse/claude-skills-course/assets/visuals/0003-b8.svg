@@ -1,0 +1,29 @@
+<svg viewBox="0 0 800 450" xmlns="http://www.w3.org/2000/svg" font-family="ui-sans-serif, system-ui, sans-serif">
+  <rect width="800" height="450" fill="#0f1226"/>
+  <text x="40" y="56" fill="#e8e8f0" font-size="26" font-weight="700">Two habits that age well</text>
+  <text x="40" y="86" fill="#8a90b8" font-size="16">Consistent terms · no time-sensitive text</text>
+
+  <g transform="translate(60,120)">
+    <rect width="330" height="260" rx="12" fill="#12152e" stroke="#6ee7b7" stroke-width="1.5"/>
+    <text x="20" y="34" fill="#6ee7b7" font-size="15" font-weight="700">Consistent terminology</text>
+    <text x="20" y="70" fill="#e8e8f0" font-size="13.5">Pick one word, use it throughout:</text>
+    <text x="20" y="100" fill="#a9b0e0" font-size="13.5" font-family="ui-monospace, monospace">always "API endpoint"</text>
+    <text x="20" y="126" fill="#a9b0e0" font-size="13.5" font-family="ui-monospace, monospace">always "field"</text>
+    <text x="20" y="152" fill="#a9b0e0" font-size="13.5" font-family="ui-monospace, monospace">always "extract"</text>
+    <text x="20" y="200" fill="#8a90b8" font-size="12.5">Mixing synonyms makes it</text>
+    <text x="20" y="220" fill="#8a90b8" font-size="12.5">harder for Claude to follow.</text>
+  </g>
+
+  <g transform="translate(420,120)">
+    <rect width="330" height="260" rx="12" fill="#12152e" stroke="#c9a227" stroke-width="1.5"/>
+    <text x="20" y="34" fill="#c9a227" font-size="15" font-weight="700">No time-sensitive info</text>
+    <text x="20" y="70" fill="#f0a3a3" font-size="12.5" font-family="ui-monospace, monospace">✗ "before Aug 2025 use v1"</text>
+    <text x="20" y="112" fill="#6ee7b7" font-size="12.5" font-family="ui-monospace, monospace">✓ ## Current method</text>
+    <text x="20" y="134" fill="#a9b0e0" font-size="12.5" font-family="ui-monospace, monospace">   use the v2 endpoint</text>
+    <text x="20" y="164" fill="#6ee7b7" font-size="12.5" font-family="ui-monospace, monospace">✓ ## Old patterns</text>
+    <text x="20" y="186" fill="#a9b0e0" font-size="12.5" font-family="ui-monospace, monospace">   (deprecated details here)</text>
+    <text x="20" y="230" fill="#8a90b8" font-size="12.5">Facts that will go stale belong</text>
+    <text x="20" y="250" fill="#8a90b8" font-size="12.5">in an "old patterns" section.</text>
+  </g>
+  <text x="40" y="425" fill="#5b6091" font-size="12">Source: Skill authoring best practices (Claude Platform Docs)</text>
+</svg>

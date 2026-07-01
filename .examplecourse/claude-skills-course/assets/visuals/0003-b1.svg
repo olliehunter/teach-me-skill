@@ -1,0 +1,21 @@
+<svg viewBox="0 0 800 450" xmlns="http://www.w3.org/2000/svg" font-family="ui-sans-serif, system-ui, sans-serif">
+  <rect width="800" height="450" fill="#0f1226"/>
+  <text x="40" y="56" fill="#e8e8f0" font-size="26" font-weight="700">Frontmatter: the rules</text>
+  <text x="40" y="86" fill="#8a90b8" font-size="16">Two fields, with real constraints</text>
+
+  <g transform="translate(60,115)">
+    <rect width="680" height="130" rx="12" fill="#12152e" stroke="#7aa2f7" stroke-width="1.5"/>
+    <text x="20" y="34" fill="#7aa2f7" font-size="17" font-weight="700">name</text>
+    <text x="20" y="62" fill="#e8e8f0" font-size="14">• max 64 characters</text>
+    <text x="20" y="88" fill="#e8e8f0" font-size="14">• lowercase letters, numbers, hyphens only — no XML tags</text>
+    <text x="20" y="114" fill="#f0a3a3" font-size="14">• cannot contain the reserved words "anthropic" or "claude"</text>
+  </g>
+
+  <g transform="translate(60,260)">
+    <rect width="680" height="120" rx="12" fill="#12152e" stroke="#6ee7b7" stroke-width="1.5"/>
+    <text x="20" y="34" fill="#6ee7b7" font-size="17" font-weight="700">description</text>
+    <text x="20" y="62" fill="#e8e8f0" font-size="14">• non-empty · max 1024 characters · no XML tags</text>
+    <text x="20" y="90" fill="#e8e8f0" font-size="14">• says what the skill does AND when Claude should use it</text>
+  </g>
+  <text x="40" y="425" fill="#5b6091" font-size="12">Source: Agent Skills Overview (Claude Platform Docs)</text>
+</svg>

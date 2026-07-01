@@ -1,0 +1,27 @@
+<svg viewBox="0 0 800 450" xmlns="http://www.w3.org/2000/svg" font-family="ui-sans-serif, system-ui, sans-serif">
+  <rect width="800" height="450" fill="#0f1226"/>
+  <text x="40" y="56" fill="#e8e8f0" font-size="26" font-weight="700">From DXT to a shared standard</text>
+  <text x="40" y="86" fill="#8a90b8" font-size="16">The format moved out of any single client</text>
+
+  <line x1="90" y1="200" x2="710" y2="200" stroke="#3a3f6b" stroke-width="3"/>
+
+  <g>
+    <circle cx="150" cy="200" r="9" fill="#7aa2f7"/>
+    <text x="150" y="160" fill="#7aa2f7" font-size="14" text-anchor="middle" font-weight="700">Jun 2025</text>
+    <text x="150" y="240" fill="#e8e8f0" font-size="13" text-anchor="middle">DXT launches</text>
+    <text x="150" y="260" fill="#8a90b8" font-size="12" text-anchor="middle">(Desktop Extension)</text>
+
+    <circle cx="400" cy="200" r="9" fill="#c9a227"/>
+    <text x="400" y="160" fill="#c9a227" font-size="14" text-anchor="middle" font-weight="700">Sep 2025</text>
+    <text x="400" y="240" fill="#e8e8f0" font-size="13" text-anchor="middle">.dxt → .mcpb</text>
+    <text x="400" y="260" fill="#8a90b8" font-size="12" text-anchor="middle">renamed</text>
+
+    <circle cx="650" cy="200" r="9" fill="#6ee7b7"/>
+    <text x="650" y="160" fill="#6ee7b7" font-size="14" text-anchor="middle" font-weight="700">Nov 2025</text>
+    <text x="650" y="240" fill="#e8e8f0" font-size="13" text-anchor="middle">joins the MCP</text>
+    <text x="650" y="260" fill="#8a90b8" font-size="12" text-anchor="middle">project</text>
+  </g>
+
+  <text x="400" y="330" fill="#8a90b8" font-size="14" text-anchor="middle">The goal: build a bundle once, install it in any compatible client.</text>
+  <text x="40" y="425" fill="#5b6091" font-size="12">Source: Desktop Extensions blog · Adopting the MCP Bundle format</text>
+</svg>

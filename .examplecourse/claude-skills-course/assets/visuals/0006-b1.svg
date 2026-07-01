@@ -1,0 +1,27 @@
+<svg viewBox="0 0 800 450" xmlns="http://www.w3.org/2000/svg" font-family="ui-sans-serif, system-ui, sans-serif">
+  <rect width="800" height="450" fill="#0f1226"/>
+  <text x="40" y="56" fill="#e8e8f0" font-size="26" font-weight="700">The problem MCPB solves</text>
+  <text x="40" y="86" fill="#8a90b8" font-size="16">Local MCP servers were powerful but painful to install</text>
+
+  <g transform="translate(60,120)">
+    <rect width="330" height="270" rx="14" fill="#12152e" stroke="#f0a3a3" stroke-width="1.5"/>
+    <text x="20" y="34" fill="#f0a3a3" font-size="15" font-weight="700">Before</text>
+    <text x="20" y="70" fill="#e8e8f0" font-size="13">• install Node.js / Python</text>
+    <text x="20" y="98" fill="#e8e8f0" font-size="13">• npm install -g the server</text>
+    <text x="20" y="126" fill="#e8e8f0" font-size="13">• hand-edit a JSON config</text>
+    <text x="20" y="154" fill="#e8e8f0" font-size="13">• resolve dependency conflicts</text>
+    <text x="20" y="182" fill="#e8e8f0" font-size="13">• restart, and hope</text>
+    <text x="20" y="228" fill="#8a90b8" font-size="12.5">Inaccessible to non-developers.</text>
+  </g>
+
+  <g transform="translate(420,120)">
+    <rect width="330" height="270" rx="14" fill="#12152e" stroke="#6ee7b7" stroke-width="2"/>
+    <text x="20" y="34" fill="#6ee7b7" font-size="15" font-weight="700">After (.mcpb)</text>
+    <text x="20" y="80" fill="#e8e8f0" font-size="14">1 · download a .mcpb file</text>
+    <text x="20" y="120" fill="#e8e8f0" font-size="14">2 · double-click to open</text>
+    <text x="20" y="160" fill="#e8e8f0" font-size="14">3 · click "Install"</text>
+    <text x="20" y="220" fill="#8a90b8" font-size="12.5">No terminal, no config files,</text>
+    <text x="20" y="240" fill="#8a90b8" font-size="12.5">no dependency conflicts.</text>
+  </g>
+  <text x="40" y="425" fill="#5b6091" font-size="12">Source: Desktop Extensions (Anthropic Engineering)</text>
+</svg>

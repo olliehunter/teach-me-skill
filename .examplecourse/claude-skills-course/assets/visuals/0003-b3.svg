@@ -1,0 +1,20 @@
+<svg viewBox="0 0 800 450" xmlns="http://www.w3.org/2000/svg" font-family="ui-sans-serif, system-ui, sans-serif">
+  <rect width="800" height="450" fill="#0f1226"/>
+  <text x="40" y="56" fill="#e8e8f0" font-size="26" font-weight="700">The description is the trigger</text>
+  <text x="40" y="86" fill="#8a90b8" font-size="16">Claude picks from 100+ skills using this line alone</text>
+
+  <g transform="translate(60,120)">
+    <rect width="680" height="90" rx="12" fill="#12152e" stroke="#6ee7b7" stroke-width="2"/>
+    <text x="20" y="30" fill="#6ee7b7" font-size="13" font-weight="700">GOOD — third person, what + when, key terms</text>
+    <text x="20" y="60" fill="#e8e8f0" font-size="13.5" font-family="ui-monospace, monospace">Extract text and tables from PDFs, fill forms, merge docs.</text>
+    <text x="20" y="80" fill="#e8e8f0" font-size="13.5" font-family="ui-monospace, monospace">Use when the user mentions PDFs, forms, or extraction.</text>
+  </g>
+
+  <g transform="translate(60,230)">
+    <rect width="680" height="70" rx="12" fill="#12152e" stroke="#f0a3a3" stroke-width="1.5"/>
+    <text x="20" y="30" fill="#f0a3a3" font-size="13" font-weight="700">AVOID — vague, or first / second person</text>
+    <text x="20" y="58" fill="#e8e8f0" font-size="13.5" font-family="ui-monospace, monospace">"Helps with documents"  ·  "I can help you process files"</text>
+  </g>
+  <text x="60" y="345" fill="#8a90b8" font-size="14">Write in third person: the description is injected into the system prompt.</text>
+  <text x="40" y="425" fill="#5b6091" font-size="12">Source: Skill authoring best practices (Claude Platform Docs)</text>
+</svg>

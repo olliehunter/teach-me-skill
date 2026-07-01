@@ -1,0 +1,193 @@
+{
+  "schema_version": "1.0",
+  "lesson_id": "0003",
+  "slug": "writing-skill-md",
+  "title": "Writing a SKILL.md That Triggers",
+  "mission_ref": "MISSION.md",
+  "objective": "Author the frontmatter and body well: field constraints, naming, trigger-worthy descriptions, conciseness, and degrees of freedom.",
+  "prerequisites": [
+    "0001",
+    "0002"
+  ],
+  "estimated_seconds": 250,
+  "voice": {
+    "engine": "kokoro",
+    "lang_code": "a",
+    "voice": "af_heart",
+    "speed": 1.0
+  },
+  "sources": [
+    {
+      "id": "s1",
+      "title": "Agent Skills — Overview (Claude Platform Docs)",
+      "url": "https://platform.claude.com/docs/en/agents-and-tools/agent-skills/overview",
+      "excerpt_ref": "sources/s1.md",
+      "accessed": "2026-07-01",
+      "tier": 1,
+      "trust_rationale": "Anthropic's canonical product documentation for Agent Skills."
+    },
+    {
+      "id": "s2",
+      "title": "Skill authoring best practices (Claude Platform Docs)",
+      "url": "https://platform.claude.com/docs/en/agents-and-tools/agent-skills/best-practices",
+      "excerpt_ref": "sources/s2.md",
+      "accessed": "2026-07-01",
+      "tier": 1,
+      "trust_rationale": "Anthropic's official authoring guidance."
+    }
+  ],
+  "beats": [
+    {
+      "id": "b1",
+      "type": "narration",
+      "narration": "Let's write one properly, starting with the frontmatter rules. The name is capped at sixty-four characters, allows only lowercase letters, numbers, and hyphens, and — a common gotcha — it cannot contain the reserved words anthropic or claude. The description is capped at one thousand twenty-four characters, must be non-empty, and, like the name, cannot contain XML tags.",
+      "audio": "assets/audio/0003-b1.wav",
+      "visual": {
+        "kind": "svg_file",
+        "src": "assets/visuals/0003-b1.svg",
+        "alt": "The name and description fields with their length and character constraints"
+      },
+      "citations": [
+        "s1"
+      ],
+      "audio_duration_s": 22.44
+    },
+    {
+      "id": "b2",
+      "type": "narration",
+      "narration": "For the name itself, Anthropic recommends the gerund form — verb plus i-n-g — because it describes the activity: processing-pdfs, analyzing-spreadsheets, managing-databases. Noun phrases like pdf-processing are fine too. What you want to avoid are vague names like helper, utils, or tools, and generic ones like documents or data. A sharp, consistent name pays off across a whole library of skills.",
+      "audio": "assets/audio/0003-b2.wav",
+      "visual": {
+        "kind": "svg_file",
+        "src": "assets/visuals/0003-b2.svg",
+        "alt": "Good gerund names versus vague names to avoid"
+      },
+      "citations": [
+        "s2"
+      ],
+      "audio_duration_s": 25.62
+    },
+    {
+      "id": "b3",
+      "type": "narration",
+      "narration": "Now the single most important line you'll write: the description. Claude uses it to choose the right skill from potentially a hundred or more. So make it specific, include the key terms a user would say, and state both what the skill does and when to use it. And always write it in third person — it gets injected into the system prompt, so first or second person phrasing causes discovery problems.",
+      "audio": "assets/audio/0003-b3.wav",
+      "visual": {
+        "kind": "svg_file",
+        "src": "assets/visuals/0003-b3.svg",
+        "alt": "A good specific third-person description versus vague first-person ones"
+      },
+      "citations": [
+        "s2"
+      ],
+      "audio_duration_s": 23.42
+    },
+    {
+      "id": "b4",
+      "type": "quiz",
+      "format": "single_choice",
+      "narration_intro": "Pick the description that will trigger reliably.",
+      "audio_intro": "assets/audio/0003-b4-intro.wav",
+      "prompt": "Which description is most likely to help Claude select the skill correctly?",
+      "options": [
+        {
+          "id": "a",
+          "text": "Analyzes Excel files; use for .xlsx or tabular data"
+        },
+        {
+          "id": "b",
+          "text": "I can help you out with all kinds of data tasks"
+        },
+        {
+          "id": "c",
+          "text": "Processes assorted data of whatever type you need"
+        }
+      ],
+      "answer": "a",
+      "correct_feedback": "Correct. It's third person, specific, and states both what it does and when to use it.",
+      "audio_correct": "assets/audio/0003-b4-correct.wav",
+      "incorrect_feedback": "Not quite. The strongest description is specific and third person, naming both what the skill does and when to use it — the Excel option.",
+      "audio_incorrect": "assets/audio/0003-b4-incorrect.wav",
+      "citations": [
+        "s2"
+      ]
+    },
+    {
+      "id": "b5",
+      "type": "narration",
+      "narration": "For the body, the governing principle is: concise is key. Your default assumption should be that Claude is already very smart, so only add context Claude doesn't already have. Don't explain what a PDF is or how libraries work. Challenge every paragraph with one question — does this justify its token cost? Once loaded, each line competes with conversation history and everything else.",
+      "audio": "assets/audio/0003-b5.wav",
+      "visual": {
+        "kind": "svg_file",
+        "src": "assets/visuals/0003-b5.svg",
+        "alt": "A verbose 150-token instruction versus a concise 50-token one"
+      },
+      "citations": [
+        "s2"
+      ],
+      "audio_duration_s": 23.53
+    },
+    {
+      "id": "b6",
+      "type": "narration",
+      "narration": "The other big authoring decision is how much freedom to give. Match specificity to the task's fragility. High freedom — plain prose — when many approaches are valid and context decides. Medium freedom — a parameterised pattern — when there's a preferred way but some variation is fine. Low freedom — an exact script you tell Claude not to modify — when the operation is fragile and consistency is critical. Narrow bridge: guardrails. Open field: direction.",
+      "audio": "assets/audio/0003-b6.wav",
+      "visual": {
+        "kind": "svg_file",
+        "src": "assets/visuals/0003-b6.svg",
+        "alt": "High, medium, and low freedom instruction styles with the bridge and field analogy"
+      },
+      "citations": [
+        "s2"
+      ],
+      "audio_duration_s": 26.86
+    },
+    {
+      "id": "b7",
+      "type": "quiz",
+      "format": "single_choice",
+      "narration_intro": "Match the task to the freedom level.",
+      "audio_intro": "assets/audio/0003-b7-intro.wav",
+      "prompt": "A fragile database migration that must run in an exact sequence calls for which style?",
+      "options": [
+        {
+          "id": "a",
+          "text": "Low freedom: a specific script Claude runs exactly as given"
+        },
+        {
+          "id": "b",
+          "text": "High freedom: open prose leaving Claude to choose freely"
+        },
+        {
+          "id": "c",
+          "text": "No instructions at all, so Claude stays flexible here"
+        }
+      ],
+      "answer": "a",
+      "correct_feedback": "Right. Fragile, must-be-consistent operations get low freedom — an exact script, not modified.",
+      "audio_correct": "assets/audio/0003-b7-correct.wav",
+      "incorrect_feedback": "Not quite. A fragile migration that must run in an exact sequence calls for low freedom — a specific script Claude runs without modifying.",
+      "audio_incorrect": "assets/audio/0003-b7-incorrect.wav",
+      "citations": [
+        "s2"
+      ]
+    },
+    {
+      "id": "b8",
+      "type": "narration",
+      "narration": "Two habits keep a skill healthy over time. First, use consistent terminology — pick one word, always API endpoint, always field, always extract, rather than rotating synonyms Claude has to reconcile. Second, avoid time-sensitive information. Don't write before August use the old API. Instead keep a Current method section and tuck deprecated details into an Old patterns section, so the skill never silently goes wrong.",
+      "audio": "assets/audio/0003-b8.wav",
+      "visual": {
+        "kind": "svg_file",
+        "src": "assets/visuals/0003-b8.svg",
+        "alt": "Consistent terminology and an old-patterns section for deprecated details"
+      },
+      "citations": [
+        "s2"
+      ],
+      "audio_duration_s": 26.28
+    }
+  ],
+  "created": "2026-07-01T00:00:00Z",
+  "generated_by": "teach-me 0.1"
+}
