@@ -1,5 +1,12 @@
 # teach-me Player — Checkpoint B Acceptance (Issue 011, HITL)
 
+> **✅ SIGNED OFF (2026-07-01).** Human confirmed the bundled `.app` end-to-end on a
+> current build (all fixes included): opens a workspace, shows coverage, plays narration
+> with synced SVG visuals, runs the quiz with split correct/incorrect feedback audio,
+> records progress + resume, completes a lesson ("Finish lesson" → course screen), and
+> answers a spoken tutor question in the course voice — with no dev Python present.
+
+
 Issues 001–010 are implemented, reviewed against their acceptance criteria, and merged to `main`
 with all automated tests green (161 front-end Vitest + 30 Python sidecar pytest). Issue 011 is the
 **human-in-the-loop** capstone: build the bundled `.app`, run it with **no dev Python**, and confirm
