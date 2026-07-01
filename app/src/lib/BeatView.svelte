@@ -30,6 +30,7 @@
 
   import NarrationBeatView from "./NarrationBeatView.svelte";
   import QuizBeatView from "./QuizBeatView.svelte";
+  import ContestedBeatView from "./ContestedBeatView.svelte";
   import type { Beat, Source } from "./types.js";
   import type { RenderedVisual } from "./visualRenderer.js";
 
@@ -88,16 +89,12 @@
   />
 
 {:else if beat.type === "contested"}
-  <!--
-    Contested beat placeholder — 008 will replace this with side-by-side positions.
-    No auto-advance: the learner presses Next when ready.
-  -->
-  <div class="beat-placeholder beat-placeholder--contested" role="region" aria-label="Contested beat {beat.id}">
-    <div class="placeholder-icon" aria-hidden="true">⚖</div>
-    <h2 class="placeholder-title">Contested</h2>
-    <p class="placeholder-prompt">{beat.question}</p>
-    <p class="placeholder-note">Full contested view coming in issue 008. Press Next to continue.</p>
-  </div>
+  <ContestedBeatView
+    {beat}
+    {sources}
+    {workspacePath}
+    {readExcerpt}
+  />
 
 {:else}
   <!-- Unknown beat type — future-proof fallback -->
@@ -148,13 +145,6 @@
   }
 
   .beat-placeholder--quiz {
-    border: 2px dashed #e5e7eb;
-    border-radius: 12px;
-    background: #fafafa;
-    margin-top: 1.5rem;
-  }
-
-  .beat-placeholder--contested {
     border: 2px dashed #e5e7eb;
     border-radius: 12px;
     background: #fafafa;

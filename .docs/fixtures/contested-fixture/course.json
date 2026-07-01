@@ -1,0 +1,30 @@
+{
+  "schema_version": "1.0",
+  "title": "Central Bank Mandate Design",
+  "mission_ref": "MISSION.md",
+  "voice": { "engine": "kokoro", "lang_code": "a", "voice": "af_heart", "speed": 1.0 },
+  "lessons": [
+    {
+      "lesson_id": "0001",
+      "slug": "dual-vs-single-mandate",
+      "title": "Dual Mandate vs. Price Stability First",
+      "status": "ready"
+    }
+  ],
+  "coverage": {
+    "covered": [
+      "What a central bank mandate is",
+      "The Federal Reserve's dual mandate (employment + price stability)",
+      "The ECB's single mandate (price stability first)",
+      "Why the disagreement is genuine and persists among Tier 1 institutions"
+    ],
+    "excluded": [
+      {
+        "topic": "Optimal target level of inflation (2% debate)",
+        "reason": "Requires sourcing a wider set of academic papers; out of scope for this fixture."
+      }
+    ]
+  },
+  "created": "2026-07-01T10:00:00Z",
+  "generated_by": "teach-me 0.1 (contested fixture)"
+}
