@@ -345,6 +345,15 @@
   // Reactive effects
   // ---------------------------------------------------------------------------
 
+  // Reactively (re)render the current beat's visual whenever the manifest is
+  // ready or the beat index changes. Robust against HMR and any timing gaps in
+  // the imperative goToBeat() path.
+  $effect(() => {
+    if (manifestState.phase === "ready") {
+      void renderCurrentVisual(manifestState.manifest, currentBeatIndex);
+    }
+  });
+
   // Reload manifest when lessonId or workspacePath changes.
   $effect(() => {
     const _lid = lessonId;
