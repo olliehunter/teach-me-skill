@@ -6,26 +6,29 @@
    *   idle        → "Open Course Folder" button (+ dev fixture shortcut)
    *   loading     → validating workspace
    *   not_a_course → friendly error
-   *   ready       → CourseScreen
+   *   ready       → CourseScreen or LessonPlayer
    *
-   * The sidecar health check remains in a collapsed status strip so the
-   * tutor (Phase 4) can reflect its status; it doesn't block course browsing.
-   *
-   * Seam for 005/006: `handleLaunch(lessonId)` is called when the learner
-   * clicks Launch on the course screen.  Wire it to the playback route in
-   * issue 005.
+   * Issue 006 additions:
+   *   - `handleLaunch` computes resume beat index from folded progress.
+   *   - `handleCompleted` writes no events (LessonPlayer does that); it
+   *     highlights the next lesson on the course screen.
+   *   - Progress is re-loaded when returning from a lesson so badges refresh.
+   *   - `progressWriter` is created once from the Tauri adapter and passed
+   *     into LessonPlayer (keeps Tauri out of LessonPlayer's import graph).
    */
 
   import { onMount, onDestroy } from "svelte";
   import { open as openDialog } from "@tauri-apps/plugin-dialog";
-  import { readTextFile, exists } from "@tauri-apps/plugin-fs";
+  import { readTextFile, exists, writeTextFile } from "@tauri-apps/plugin-fs";
   import { pollSidecarHealth } from "$lib/sidecar.js";
   import { validateWorkspace } from "$lib/workspace.js";
-  import { loadProgress } from "$lib/progress.js";
+  import { loadProgress, resumeBeatIndex } from "$lib/progress.js";
+  import { makeProgressWriter } from "$lib/progressWriter.js";
   import CourseScreen from "$lib/CourseScreen.svelte";
   import LessonPlayer from "$lib/LessonPlayer.svelte";
   import type { FsAdapter, WorkspaceValidationResult } from "$lib/workspace.js";
   import type { CourseProgress } from "$lib/progress.js";
+  import type { ProgressWriter } from "$lib/progressWriter.js";
 
   // ---------------------------------------------------------------------------
   // Tauri fs adapter — wraps plugin-fs for injection into pure workspace logic
@@ -37,11 +40,17 @@
   };
 
   // ---------------------------------------------------------------------------
-  // Sidecar health (used by the tutor in Phase 4; shown as a small status strip)
+  // Progress writer (Tauri-backed; injected into LessonPlayer)
+  // ---------------------------------------------------------------------------
+
+  /** Set when a workspace is loaded; cleared on close. */
+  let activeProgressWriter = $state<ProgressWriter | null>(null);
+
+  // ---------------------------------------------------------------------------
+  // Sidecar health (shown as a small status strip; used by tutor in Phase 4)
   // ---------------------------------------------------------------------------
 
   let sidecarStatus = $state<"waiting" | "ready" | "error">("waiting");
-
   let cancelHealthPoll: (() => void) | null = null;
 
   onMount(() => {
@@ -63,26 +72,35 @@
     | { phase: "idle" }
     | { phase: "loading" }
     | { phase: "not_a_course"; reason: string }
-    | { phase: "ready"; result: WorkspaceValidationResult & { kind: "valid" }; progress: CourseProgress };
+    | {
+        phase: "ready";
+        result: WorkspaceValidationResult & { kind: "valid" };
+        progress: CourseProgress;
+      };
 
   let pageState = $state<PageState>({ phase: "idle" });
 
   /**
-   * When non-null, the lesson player is shown instead of the course screen.
-   * Issue 006 (transport) will replace this with full routing once it takes over
-   * beat navigation.  For now (issue 005) we just show beat 0.
+   * When non-null, the lesson player is shown.
+   * `lastBeatId` is passed to LessonPlayer as `resumeFromBeatId` so it can
+   * resolve the beat index after loading the manifest.
    */
-  let playingLessonId = $state<string | null>(null);
+  let playingLesson = $state<{
+    lessonId: string;
+    lastBeatId: string | null;
+  } | null>(null);
 
-  // Dev affordance: if running in dev mode, allow loading the fixture path
-  // directly without a dialog.  Gated on import.meta.env.DEV so it compiles
-  // away in production builds.
+  /** Lesson to highlight on the course screen after lesson_completed (DECISIONS §5). */
+  let highlightedLessonId = $state<string | null>(null);
+
+  // Dev affordance: load the fixture path without a dialog.
   const DEV_FIXTURE_PATH =
     "/Users/ollie/development/teachmeplayer/docs/fixtures/example-course";
 
-  /** Load a workspace from a folder path (used by both the dialog and dev shortcut). */
+  /** Load a workspace from a folder path. */
   async function loadWorkspace(folderPath: string) {
     pageState = { phase: "loading" };
+    highlightedLessonId = null;
     try {
       const result = await validateWorkspace(folderPath, tauriFsAdapter);
 
@@ -93,6 +111,13 @@
 
       const lessonIds = result.course.lessons.map((l) => l.lesson_id);
       const progress = await loadProgress(folderPath, lessonIds, tauriFsAdapter);
+
+      // Create the progress writer for this workspace.
+      activeProgressWriter = makeProgressWriter(folderPath, {
+        async appendText(path: string, data: string) {
+          await writeTextFile(path, data, { append: true, create: true });
+        },
+      });
 
       pageState = { phase: "ready", result, progress };
     } catch (e) {
@@ -106,7 +131,7 @@
   /** Open a folder picker dialog and load the selected workspace. */
   async function handleOpenWorkspace() {
     const selected = await openDialog({ directory: true, multiple: false });
-    if (!selected) return; // user cancelled
+    if (!selected) return;
     const folderPath = typeof selected === "string" ? selected : selected[0];
     if (!folderPath) return;
     await loadWorkspace(folderPath);
@@ -119,21 +144,59 @@
 
   function handleClose() {
     pageState = { phase: "idle" };
-    playingLessonId = null;
+    playingLesson = null;
+    highlightedLessonId = null;
+    activeProgressWriter = null;
   }
 
   /**
-   * Called when the learner clicks "Launch" on a lesson.
-   * Sets playingLessonId so the LessonPlayer is shown (issue 005).
-   * Issue 006 (transport) will replace this with a proper routing approach.
+   * Called when the learner clicks "Launch" or "Resume" on a lesson.
+   * The page only knows `lastBeatId` from the progress fold; LessonPlayer
+   * resolves it to a beat index after loading the manifest.
    */
   function handleLaunch(lessonId: string) {
-    playingLessonId = lessonId;
+    if (pageState.phase !== "ready") return;
+    highlightedLessonId = null;
+    const lessonProgress = pageState.progress.lessons.get(lessonId);
+    const lastBeatId = lessonProgress?.lastBeatId ?? null;
+    playingLesson = { lessonId, lastBeatId };
   }
 
-  /** Return from the lesson player to the course screen. */
-  function handleBackToCourse() {
-    playingLessonId = null;
+  /**
+   * Return from the lesson player to the course screen (back at first beat).
+   * Reload progress so badges refresh.
+   */
+  async function handleBackToCourse() {
+    playingLesson = null;
+    await reloadProgress();
+  }
+
+  /**
+   * Called when LessonPlayer fires lesson_completed.
+   * Highlights the next lesson in the course, reloads progress.
+   */
+  async function handleLessonCompleted(lessonId: string) {
+    if (pageState.phase !== "ready") return;
+    const lessons = pageState.result.course.lessons;
+    const idx = lessons.findIndex((l) => l.lesson_id === lessonId);
+    // Highlight the next lesson if there is one
+    highlightedLessonId = idx >= 0 && idx + 1 < lessons.length
+      ? lessons[idx + 1].lesson_id
+      : null;
+    playingLesson = null;
+    await reloadProgress();
+  }
+
+  /** Re-fold progress.jsonl and update the page state. */
+  async function reloadProgress() {
+    if (pageState.phase !== "ready") return;
+    const lessonIds = pageState.result.course.lessons.map((l) => l.lesson_id);
+    const progress = await loadProgress(
+      pageState.result.workspacePath,
+      lessonIds,
+      tauriFsAdapter,
+    );
+    pageState = { ...pageState, progress };
   }
 </script>
 
@@ -193,18 +256,21 @@
     </div>
 
   {:else if pageState.phase === "ready"}
-    {#if playingLessonId}
+    {#if playingLesson && activeProgressWriter}
       <LessonPlayer
-        lessonId={playingLessonId}
+        lessonId={playingLesson.lessonId}
         workspacePath={pageState.result.workspacePath}
-        beatIndex={0}
-        onBack={handleBackToCourse}
+        resumeFromBeatId={playingLesson.lastBeatId}
+        progressWriter={activeProgressWriter}
+        onBack={() => void handleBackToCourse()}
+        onCompleted={(lid) => void handleLessonCompleted(lid)}
       />
     {:else}
       <CourseScreen
         course={pageState.result.course}
         lessons={pageState.result.lessons}
         progress={pageState.progress}
+        {highlightedLessonId}
         onLaunch={handleLaunch}
         onClose={handleClose}
       />

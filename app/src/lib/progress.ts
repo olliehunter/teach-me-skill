@@ -104,3 +104,23 @@ export async function loadProgress(
 export function completionSummary(progress: CourseProgress): string {
   return `${progress.completedCount} of ${progress.totalCount} complete`;
 }
+
+/**
+ * Derive the 0-based beat index to resume at.
+ *
+ * Scans `beatIds` (in order) for `lessonProgress.lastBeatId`.
+ * Returns 0 when there is no progress, or the beat id is no longer in the
+ * manifest (e.g. the course was regenerated with different beat ids).
+ *
+ * Duplicate events never corrupt the result: `loadProgress` already folds
+ * the log such that `lastBeatId` is the LAST beat_viewed seen — re-folding
+ * the same log always produces the same value.
+ */
+export function resumeBeatIndex(
+  beatIds: string[],
+  lessonProgress: LessonProgress | undefined,
+): number {
+  if (!lessonProgress?.lastBeatId) return 0;
+  const idx = beatIds.indexOf(lessonProgress.lastBeatId);
+  return idx >= 0 ? idx : 0;
+}
