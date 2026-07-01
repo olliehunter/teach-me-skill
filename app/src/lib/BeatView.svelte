@@ -29,6 +29,7 @@
    */
 
   import NarrationBeatView from "./NarrationBeatView.svelte";
+  import QuizBeatView from "./QuizBeatView.svelte";
   import type { Beat, Source } from "./types.js";
   import type { RenderedVisual } from "./visualRenderer.js";
 
@@ -42,6 +43,12 @@
     readExcerpt: (excerptRef: string) => Promise<string>;
     /** Called when the beat's content completes naturally (narration: audio ended). */
     onBeatComplete: () => void;
+    /**
+     * Called by QuizBeatView on submit with (chosen, correct).
+     * LessonPlayer provides this to write the quiz_answer progress event.
+     * Optional: absent → quiz interaction works but event is not persisted.
+     */
+    onQuizAnswer?: (chosen: string, correct: boolean) => void;
   }
 
   let {
@@ -52,6 +59,7 @@
     audioSrc,
     readExcerpt,
     onBeatComplete,
+    onQuizAnswer,
   }: Props = $props();
 </script>
 
@@ -70,16 +78,14 @@
   />
 
 {:else if beat.type === "quiz"}
-  <!--
-    Quiz beat placeholder — 007 will replace this with full quiz interaction.
-    No auto-advance: the learner presses Next when ready.
-  -->
-  <div class="beat-placeholder beat-placeholder--quiz" role="region" aria-label="Quiz beat {beat.id}">
-    <div class="placeholder-icon" aria-hidden="true">?</div>
-    <h2 class="placeholder-title">Quiz</h2>
-    <p class="placeholder-prompt">{beat.prompt}</p>
-    <p class="placeholder-note">Full quiz interaction coming in issue 007. Press Next to continue.</p>
-  </div>
+  <QuizBeatView
+    {beat}
+    {sources}
+    {workspacePath}
+    {readExcerpt}
+    {onBeatComplete}
+    onQuizAnswer={onQuizAnswer ?? (() => {})}
+  />
 
 {:else if beat.type === "contested"}
   <!--
