@@ -119,6 +119,12 @@
   /** 0-based index of the current beat. */
   let currentBeatIndex = $state(0);
 
+  /** True when the current beat is the lesson's last — Next becomes "Finish lesson". */
+  const isLastBeat = $derived(
+    manifestState.phase === "ready" &&
+      currentBeatIndex >= manifestState.manifest.beats.length - 1,
+  );
+
   // ---------------------------------------------------------------------------
   // Tutor interrupt — narration pause
   // ---------------------------------------------------------------------------
@@ -304,7 +310,13 @@
     if (manifestState.phase !== "ready") return;
     const result = stepNext(currentBeatIndex, manifestState.manifest.beats.length);
     if (result.action === "lesson_completed") {
-      await writeLessonCompleted();
+      // Progress logging must never block navigation — record best-effort,
+      // then always return to the course screen.
+      try {
+        await writeLessonCompleted();
+      } catch (e) {
+        console.error("progress: lesson_completed write failed", e);
+      }
       onCompleted(lessonId);
     } else {
       void goToBeat(manifestState.manifest, result.index);
@@ -454,9 +466,9 @@
         <button
           class="btn-transport btn-next-beat"
           onclick={() => void handleNext()}
-          aria-label="Next beat"
+          aria-label={isLastBeat ? "Finish lesson" : "Next beat"}
         >
-          Next →
+          {isLastBeat ? "Finish lesson" : "Next →"}
         </button>
       </div>
 
