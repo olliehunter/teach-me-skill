@@ -218,6 +218,18 @@
     );
   }
 
+  async function writeQuizAnswer(beatId: string, chosen: string, correct: boolean) {
+    await progressWriter.append(
+      buildEvent({
+        lesson: lessonId,
+        beat: beatId,
+        event: "quiz_answer",
+        chosen,
+        correct,
+      }),
+    );
+  }
+
   // ---------------------------------------------------------------------------
   // Navigate to a beat index (write beat_viewed, re-render visual)
   // ---------------------------------------------------------------------------
@@ -346,6 +358,8 @@
             : ""}
           {readExcerpt}
           onBeatComplete={handleBeatComplete}
+          onQuizAnswer={(chosen, correct) =>
+            void writeQuizAnswer(beat.id, chosen, correct)}
         />
       {:else}
         <div class="status-center">
