@@ -1,0 +1,6 @@
+kokoro-onnx==0.5.0
+onnxruntime
+soundfile
+numpy
+fastapi
+uvicorn
