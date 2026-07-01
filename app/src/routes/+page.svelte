@@ -23,6 +23,7 @@
   import { validateWorkspace } from "$lib/workspace.js";
   import { loadProgress } from "$lib/progress.js";
   import CourseScreen from "$lib/CourseScreen.svelte";
+  import LessonPlayer from "$lib/LessonPlayer.svelte";
   import type { FsAdapter, WorkspaceValidationResult } from "$lib/workspace.js";
   import type { CourseProgress } from "$lib/progress.js";
 
@@ -65,6 +66,13 @@
     | { phase: "ready"; result: WorkspaceValidationResult & { kind: "valid" }; progress: CourseProgress };
 
   let pageState = $state<PageState>({ phase: "idle" });
+
+  /**
+   * When non-null, the lesson player is shown instead of the course screen.
+   * Issue 006 (transport) will replace this with full routing once it takes over
+   * beat navigation.  For now (issue 005) we just show beat 0.
+   */
+  let playingLessonId = $state<string | null>(null);
 
   // Dev affordance: if running in dev mode, allow loading the fixture path
   // directly without a dialog.  Gated on import.meta.env.DEV so it compiles
@@ -111,17 +119,21 @@
 
   function handleClose() {
     pageState = { phase: "idle" };
+    playingLessonId = null;
   }
 
   /**
-   * Seam for 005/006 — called when the learner clicks "Launch" on a lesson.
-   * Replace this with a navigation call (e.g. goto(`/lesson/${lessonId}`))
-   * once the playback route exists.
+   * Called when the learner clicks "Launch" on a lesson.
+   * Sets playingLessonId so the LessonPlayer is shown (issue 005).
+   * Issue 006 (transport) will replace this with a proper routing approach.
    */
   function handleLaunch(lessonId: string) {
-    // TODO (issue-005): navigate to the lesson playback view
-    console.log("[teach-me] launch lesson", lessonId);
-    alert(`Lesson ${lessonId} playback — coming in issue 005!`);
+    playingLessonId = lessonId;
+  }
+
+  /** Return from the lesson player to the course screen. */
+  function handleBackToCourse() {
+    playingLessonId = null;
   }
 </script>
 
@@ -181,13 +193,22 @@
     </div>
 
   {:else if pageState.phase === "ready"}
-    <CourseScreen
-      course={pageState.result.course}
-      lessons={pageState.result.lessons}
-      progress={pageState.progress}
-      onLaunch={handleLaunch}
-      onClose={handleClose}
-    />
+    {#if playingLessonId}
+      <LessonPlayer
+        lessonId={playingLessonId}
+        workspacePath={pageState.result.workspacePath}
+        beatIndex={0}
+        onBack={handleBackToCourse}
+      />
+    {:else}
+      <CourseScreen
+        course={pageState.result.course}
+        lessons={pageState.result.lessons}
+        progress={pageState.progress}
+        onLaunch={handleLaunch}
+        onClose={handleClose}
+      />
+    {/if}
   {/if}
 </main>
 
