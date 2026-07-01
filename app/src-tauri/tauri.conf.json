@@ -30,8 +30,8 @@
     "targets": "all",
     "externalBin": ["binaries/teachme-sidecar"],
     "resources": {
-      "../../models/kokoro-v1.0.onnx": "models/",
-      "../../models/voices-v1.0.bin": "models/"
+      "../../models/kokoro-v1.0.onnx": "models/kokoro-v1.0.onnx",
+      "../../models/voices-v1.0.bin": "models/voices-v1.0.bin"
     },
     "icon": [
       "icons/32x32.png",
