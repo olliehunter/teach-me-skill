@@ -1,0 +1,83 @@
+{
+  "schema_version": "1.0",
+  "lesson_id": "0001",
+  "slug": "dual-vs-single-mandate",
+  "title": "Dual Mandate vs. Price Stability First",
+  "mission_ref": "MISSION.md",
+  "objective": "Explain the difference between a dual mandate and a price-stability-first mandate, and understand why both positions are held by credible Tier 1 institutions.",
+  "prerequisites": [],
+  "estimated_seconds": 120,
+  "voice": {
+    "engine": "kokoro",
+    "lang_code": "a",
+    "voice": "af_heart",
+    "speed": 1.0
+  },
+  "sources": [
+    {
+      "id": "s1",
+      "title": "Federal Reserve — What economic goals does the Fed seek to achieve?",
+      "url": "https://www.federalreserve.gov/faqs/money_12848.htm",
+      "excerpt_ref": "sources/s1.md",
+      "accessed": "2026-07-01",
+      "tier": 1,
+      "trust_rationale": "US central bank FAQ — primary authority on the Fed's own statutory mandate."
+    },
+    {
+      "id": "s2",
+      "title": "European Central Bank — Monetary policy introduction",
+      "url": "https://www.ecb.europa.eu/mopo/intro/html/index.en.html",
+      "excerpt_ref": "sources/s2.md",
+      "accessed": "2026-07-01",
+      "tier": 1,
+      "trust_rationale": "Eurozone central bank — primary authority on the ECB's Treaty-defined mandate."
+    }
+  ],
+  "beats": [
+    {
+      "id": "b1",
+      "type": "narration",
+      "narration": "Every central bank is given a mandate — a legal instruction about what it must achieve. But not all mandates are the same, and the differences lead to genuinely different policy choices in identical situations.",
+      "audio": "assets/audio/0001-b1.wav",
+      "audio_duration_s": 12.97,
+      "visual": {
+        "kind": "inline_svg",
+        "svg": "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 480 160' width='480' height='160'><rect width='480' height='160' fill='#f8f7ff' rx='10'/><rect x='30' y='50' width='180' height='60' rx='8' fill='#e0e7ff' stroke='#6366f1' stroke-width='1.5'/><text x='120' y='82' text-anchor='middle' font-size='13' font-weight='700' fill='#4338ca'>Federal Reserve</text><text x='120' y='99' text-anchor='middle' font-size='11' fill='#4338ca'>Dual Mandate</text><rect x='270' y='50' width='180' height='60' rx='8' fill='#e0e7ff' stroke='#6366f1' stroke-width='1.5'/><text x='360' y='82' text-anchor='middle' font-size='13' font-weight='700' fill='#4338ca'>ECB</text><text x='360' y='99' text-anchor='middle' font-size='11' fill='#4338ca'>Price Stability First</text><text x='240' y='35' text-anchor='middle' font-size='12' fill='#6b7280'>Two central banks, two mandate designs</text></svg>",
+        "alt": "Two boxes side by side: Federal Reserve with a Dual Mandate and the ECB with Price Stability First"
+      },
+      "citations": [
+        "s1",
+        "s2"
+      ]
+    },
+    {
+      "id": "b2",
+      "type": "contested",
+      "narration_intro": "Here is where two of the world's most credible central banks genuinely disagree.",
+      "audio_intro": "assets/audio/0001-b2-intro.wav",
+      "question": "Should a central bank be required to target employment as well as price stability?",
+      "positions": [
+        {
+          "label": "Dual mandate (Fed approach)",
+          "narration": "The Federal Reserve operates under a dual mandate: maximum employment and stable prices are co-equal goals, set by law. When the two goals conflict, the Fed must weigh both — it cannot sacrifice employment simply to hit an inflation target.",
+          "audio": "assets/audio/0001-b2-p1.wav",
+          "audio_duration_s": 15.59,
+          "citations": [
+            "s1"
+          ]
+        },
+        {
+          "label": "Price stability first (ECB approach)",
+          "narration": "The European Central Bank's Treaty mandate puts price stability first, always. Employment is only a secondary concern, activated once price stability is secured. The ECB argues that stable prices are themselves the best long-run foundation for jobs.",
+          "audio": "assets/audio/0001-b2-p2.wav",
+          "audio_duration_s": 16.83,
+          "citations": [
+            "s2"
+          ]
+        }
+      ]
+    }
+  ],
+  "created": "2026-07-01T10:00:00Z",
+  "generated_by": "teach-me 0.1 (contested fixture)"
+}
