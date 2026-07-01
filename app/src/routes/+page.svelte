@@ -26,9 +26,11 @@
   import { makeProgressWriter } from "$lib/progressWriter.js";
   import CourseScreen from "$lib/CourseScreen.svelte";
   import LessonPlayer from "$lib/LessonPlayer.svelte";
+  import TutorBox from "$lib/TutorBox.svelte";
   import type { FsAdapter, WorkspaceValidationResult } from "$lib/workspace.js";
   import type { CourseProgress } from "$lib/progress.js";
   import type { ProgressWriter } from "$lib/progressWriter.js";
+  import type { Source, VoiceConfig } from "$lib/types.js";
 
   // ---------------------------------------------------------------------------
   // Tauri fs adapter — wraps plugin-fs for injection into pure workspace logic
@@ -50,7 +52,7 @@
   // Sidecar health (shown as a small status strip; used by tutor in Phase 4)
   // ---------------------------------------------------------------------------
 
-  let sidecarStatus = $state<"waiting" | "ready" | "error">("waiting");
+  let sidecarStatus = $state<"warming" | "ready" | "error">("warming");
   let cancelHealthPoll: (() => void) | null = null;
 
   onMount(() => {
@@ -63,6 +65,45 @@
   onDestroy(() => {
     cancelHealthPoll?.();
   });
+
+  // ---------------------------------------------------------------------------
+  // Tutor narration pause registration
+  // ---------------------------------------------------------------------------
+
+  /**
+   * Holds the pause function registered by LessonPlayer.
+   * Null when no lesson is playing.  Called by TutorBox on question submit.
+   */
+  let pauseNarrationFn = $state<(() => void) | null>(null);
+
+  function handleRegisterPause(fn: () => void) {
+    pauseNarrationFn = fn;
+  }
+
+  function handlePauseNarration() {
+    pauseNarrationFn?.();
+  }
+
+  // readExcerpt function for TutorBox source panel (reads sources/<id>.md).
+  async function readExcerpt(excerptRef: string): Promise<string> {
+    if (pageState.phase !== "ready") return "";
+    return readTextFile(`${pageState.result.workspacePath}/${excerptRef}`);
+  }
+
+  // ---------------------------------------------------------------------------
+  // Lesson context for TutorBox (sources + beat id, updated by LessonPlayer)
+  // ---------------------------------------------------------------------------
+
+  let currentLessonSources = $state<import("$lib/types.js").Source[]>([]);
+  let currentBeatId = $state<string | undefined>(undefined);
+
+  function handleLessonSources(sources: import("$lib/types.js").Source[]) {
+    currentLessonSources = sources;
+  }
+
+  function handleCurrentBeatId(beatId: string | undefined) {
+    currentBeatId = beatId;
+  }
 
   // ---------------------------------------------------------------------------
   // Workspace state machine
@@ -168,6 +209,9 @@
    */
   async function handleBackToCourse() {
     playingLesson = null;
+    pauseNarrationFn = null;
+    currentLessonSources = [];
+    currentBeatId = undefined;
     await reloadProgress();
   }
 
@@ -184,6 +228,9 @@
       ? lessons[idx + 1].lesson_id
       : null;
     playingLesson = null;
+    pauseNarrationFn = null;
+    currentLessonSources = [];
+    currentBeatId = undefined;
     await reloadProgress();
   }
 
@@ -207,7 +254,7 @@
   class:sidecar-strip--error={sidecarStatus === "error"}
   aria-label="Sidecar status"
 >
-  {#if sidecarStatus === "waiting"}
+  {#if sidecarStatus === "warming"}
     Tutor warming up…
   {:else if sidecarStatus === "ready"}
     Tutor ready
@@ -256,25 +303,43 @@
     </div>
 
   {:else if pageState.phase === "ready"}
-    {#if playingLesson && activeProgressWriter}
-      <LessonPlayer
-        lessonId={playingLesson.lessonId}
+    <div class="ready-shell">
+      {#if playingLesson && activeProgressWriter}
+        <LessonPlayer
+          lessonId={playingLesson.lessonId}
+          workspacePath={pageState.result.workspacePath}
+          resumeFromBeatId={playingLesson.lastBeatId}
+          progressWriter={activeProgressWriter}
+          onBack={() => void handleBackToCourse()}
+          onCompleted={(lid) => void handleLessonCompleted(lid)}
+          onRegisterPause={handleRegisterPause}
+          onLessonSources={handleLessonSources}
+          onCurrentBeatId={handleCurrentBeatId}
+        />
+      {:else}
+        <CourseScreen
+          course={pageState.result.course}
+          lessons={pageState.result.lessons}
+          progress={pageState.progress}
+          {highlightedLessonId}
+          onLaunch={handleLaunch}
+          onClose={handleClose}
+        />
+      {/if}
+
+      <!-- TutorBox is ALWAYS visible when a workspace is loaded -->
+      <TutorBox
         workspacePath={pageState.result.workspacePath}
-        resumeFromBeatId={playingLesson.lastBeatId}
+        lessonId={playingLesson?.lessonId ?? (pageState.result.course.lessons[0]?.lesson_id ?? "")}
+        beatId={currentBeatId}
+        lessonSources={currentLessonSources}
+        courseVoice={pageState.result.course.voice}
+        sidecarReady={sidecarStatus}
         progressWriter={activeProgressWriter}
-        onBack={() => void handleBackToCourse()}
-        onCompleted={(lid) => void handleLessonCompleted(lid)}
+        onPauseNarration={handlePauseNarration}
+        {readExcerpt}
       />
-    {:else}
-      <CourseScreen
-        course={pageState.result.course}
-        lessons={pageState.result.lessons}
-        progress={pageState.progress}
-        {highlightedLessonId}
-        onLaunch={handleLaunch}
-        onClose={handleClose}
-      />
-    {/if}
+    </div>
   {/if}
 </main>
 
@@ -305,6 +370,17 @@
 
   .shell {
     min-height: 100vh;
+  }
+
+  /* Ready shell — stacks content + tutor box in a column filling the viewport */
+  .ready-shell {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+  }
+
+  .ready-shell > :global(:first-child) {
+    flex: 1;
   }
 
   /* Landing */

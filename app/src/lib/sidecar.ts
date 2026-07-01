@@ -75,3 +75,39 @@ export async function postSpeak(
   }
   return res.blob();
 }
+
+// ---------------------------------------------------------------------------
+// /tutor
+// ---------------------------------------------------------------------------
+
+export interface TutorResponse {
+  answer_text: string;
+  used_sources: string[];  // source IDs
+  no_key: boolean;
+}
+
+/**
+ * POST /tutor — returns the structured tutor response.
+ * Always returns a TutorResponse; never throws on a no_key result.
+ * Does throw on network / HTTP errors so the caller can show an error state.
+ */
+export async function postTutor(
+  req: {
+    question: string;
+    workspace_path: string;
+    lesson_id: string;
+    beat_id?: string;
+  },
+  base = SIDECAR_BASE,
+): Promise<TutorResponse> {
+  const res = await fetch(`${base}/tutor`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(req),
+  });
+  if (!res.ok) {
+    const detail = await res.text().catch(() => `HTTP ${res.status}`);
+    throw new Error(`Sidecar /tutor error ${res.status}: ${detail}`);
+  }
+  return (await res.json()) as TutorResponse;
+}

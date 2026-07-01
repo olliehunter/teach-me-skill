@@ -50,6 +50,11 @@
      * Optional: absent → quiz interaction works but event is not persisted.
      */
     onQuizAnswer?: (chosen: string, correct: boolean) => void;
+    /**
+     * When true, pause narration audio immediately.
+     * Set by the tutor interrupt; reset on beat navigation.
+     */
+    narrationPaused?: boolean;
   }
 
   let {
@@ -61,6 +66,7 @@
     readExcerpt,
     onBeatComplete,
     onQuizAnswer,
+    narrationPaused = false,
   }: Props = $props();
 </script>
 
@@ -76,6 +82,7 @@
     {audioSrc}
     {readExcerpt}
     {onBeatComplete}
+    paused={narrationPaused}
   />
 
 {:else if beat.type === "quiz"}

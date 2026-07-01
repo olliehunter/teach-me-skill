@@ -48,6 +48,12 @@
      * Optional — when absent (e.g. standalone use), no auto-advance occurs.
      */
     onBeatComplete?: () => void;
+    /**
+     * When true, pause the audio element immediately.
+     * Set by the tutor on question submit; stays paused (learner resumes via controls).
+     * Reset to false by the transport when navigating to a new beat.
+     */
+    paused?: boolean;
   }
 
   let {
@@ -61,7 +67,19 @@
     audioSrc,
     readExcerpt,
     onBeatComplete,
+    paused = false,
   }: Props = $props();
+
+  // Ref to the audio element so we can call .pause() programmatically.
+  let audioEl = $state<HTMLAudioElement | undefined>(undefined);
+
+  // When the tutor requests a pause, pause the audio element.
+  // Stays paused until the learner clicks play in the native controls.
+  $effect(() => {
+    if (paused && audioEl) {
+      audioEl.pause();
+    }
+  });
 
   // ---------------------------------------------------------------------------
   // Citation resolution
@@ -168,6 +186,7 @@
       -->
       <audio
         class="audio-player"
+        bind:this={audioEl}
         src={audioSrc}
         controls
         preload="auto"
