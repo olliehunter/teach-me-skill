@@ -3,7 +3,7 @@
  * These run in Vitest with a fake fetch — no real sidecar needed.
  */
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
-import { pollSidecarHealth, postSpeak } from "./sidecar.js";
+import { pollSidecarHealth, postSpeak, postTutor } from "./sidecar.js";
 
 describe("pollSidecarHealth", () => {
   beforeEach(() => {
@@ -124,5 +124,81 @@ describe("postSpeak", () => {
     await expect(
       postSpeak({ text: "hi" }, "http://test"),
     ).rejects.toThrow("Sidecar /speak error 422: invalid voice");
+  });
+});
+
+describe("postTutor", () => {
+  afterEach(() => {
+    vi.restoreAllMocks();
+  });
+
+  it("sends a POST with the correct JSON body and returns parsed JSON", async () => {
+    const fakeResponse = {
+      answer_text: "Photosynthesis converts sunlight into energy.",
+      used_sources: ["s1"],
+      no_key: false,
+    };
+    const mockFetch = vi.fn().mockResolvedValue({
+      ok: true,
+      json: () => Promise.resolve(fakeResponse),
+    });
+    vi.stubGlobal("fetch", mockFetch);
+
+    const result = await postTutor(
+      {
+        question: "What is photosynthesis?",
+        workspace_path: "/workspace",
+        lesson_id: "0001",
+        beat_id: "b1",
+      },
+      "http://test",
+    );
+
+    expect(mockFetch).toHaveBeenCalledWith("http://test/tutor", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        question: "What is photosynthesis?",
+        workspace_path: "/workspace",
+        lesson_id: "0001",
+        beat_id: "b1",
+      }),
+    });
+    expect(result.answer_text).toBe("Photosynthesis converts sunlight into energy.");
+    expect(result.used_sources).toEqual(["s1"]);
+    expect(result.no_key).toBe(false);
+  });
+
+  it("returns no_key=true when the sidecar reports missing API key", async () => {
+    const fakeResponse = {
+      answer_text: "Add your Anthropic API key to enable the tutor.",
+      used_sources: [],
+      no_key: true,
+    };
+    const mockFetch = vi.fn().mockResolvedValue({
+      ok: true,
+      json: () => Promise.resolve(fakeResponse),
+    });
+    vi.stubGlobal("fetch", mockFetch);
+
+    const result = await postTutor(
+      { question: "Q", workspace_path: "/w", lesson_id: "0001" },
+      "http://test",
+    );
+
+    expect(result.no_key).toBe(true);
+  });
+
+  it("throws on non-ok HTTP status", async () => {
+    const mockFetch = vi.fn().mockResolvedValue({
+      ok: false,
+      status: 500,
+      text: () => Promise.resolve("internal server error"),
+    });
+    vi.stubGlobal("fetch", mockFetch);
+
+    await expect(
+      postTutor({ question: "Q", workspace_path: "/w", lesson_id: "0001" }, "http://test"),
+    ).rejects.toThrow("Sidecar /tutor error 500: internal server error");
   });
 });

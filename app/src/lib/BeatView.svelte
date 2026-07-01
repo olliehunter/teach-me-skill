@@ -42,6 +42,11 @@
     readExcerpt: (excerptRef: string) => Promise<string>;
     /** Called when the beat's content completes naturally (narration: audio ended). */
     onBeatComplete: () => void;
+    /**
+     * When true, pause narration audio immediately.
+     * Set by the tutor interrupt; reset on beat navigation.
+     */
+    narrationPaused?: boolean;
   }
 
   let {
@@ -52,6 +57,7 @@
     audioSrc,
     readExcerpt,
     onBeatComplete,
+    narrationPaused = false,
   }: Props = $props();
 </script>
 
@@ -67,6 +73,7 @@
     {audioSrc}
     {readExcerpt}
     {onBeatComplete}
+    paused={narrationPaused}
   />
 
 {:else if beat.type === "quiz"}

@@ -54,6 +54,22 @@
     onBack: () => void;
     onCompleted: (lessonId: string) => void;
     progressWriter: ProgressWriter;
+    /**
+     * Called once on mount with a `pauseNarration` function.
+     * The parent stores this function and calls it when the tutor is submitted.
+     * Allows the tutor box (rendered outside LessonPlayer) to pause narration.
+     */
+    onRegisterPause?: (pauseFn: () => void) => void;
+    /**
+     * Called when the lesson manifest is loaded with the lesson's sources array.
+     * The parent (page) passes this to TutorBox for citation resolution.
+     */
+    onLessonSources?: (sources: import("./types.js").Source[]) => void;
+    /**
+     * Called whenever the current beat changes (or is first entered).
+     * The parent (page) passes this to TutorBox as the /tutor beat_id.
+     */
+    onCurrentBeatId?: (beatId: string | undefined) => void;
   }
 
   let {
@@ -64,6 +80,9 @@
     onBack,
     onCompleted,
     progressWriter,
+    onRegisterPause,
+    onLessonSources,
+    onCurrentBeatId,
   }: Props = $props();
 
   // ---------------------------------------------------------------------------
@@ -99,6 +118,24 @@
 
   /** 0-based index of the current beat. */
   let currentBeatIndex = $state(0);
+
+  // ---------------------------------------------------------------------------
+  // Tutor interrupt — narration pause
+  // ---------------------------------------------------------------------------
+
+  /**
+   * When true, tells NarrationBeatView to pause its audio element.
+   * Set to true when the tutor submits a question; reset on beat navigation.
+   * The learner resumes via the native audio controls (no auto-resume).
+   */
+  let narrationPaused = $state(false);
+
+  // Register the pause function with the parent (TutorBox path) once on mount.
+  $effect(() => {
+    onRegisterPause?.(() => {
+      narrationPaused = true;
+    });
+  });
 
   // ---------------------------------------------------------------------------
   // Visual render cache — one RenderedVisual per beat index
@@ -225,8 +262,15 @@
   async function goToBeat(manifest: LessonManifest, idx: number) {
     const clamped = clampBeatIndex(idx, manifest.beats.length);
     currentBeatIndex = clamped;
+    // Reset tutor pause on beat navigation — new beat's audio starts unpaused.
+    narrationPaused = false;
     const beat = manifest.beats[clamped];
-    if (beat) await writeBeatViewed(beat.id);
+    if (beat) {
+      await writeBeatViewed(beat.id);
+      onCurrentBeatId?.(beat.id);
+    } else {
+      onCurrentBeatId?.(undefined);
+    }
     await renderCurrentVisual(manifest, clamped);
   }
 
@@ -299,9 +343,14 @@
       if (manifestState.phase === "ready") {
         const startIdx = computeStartIndex(manifestState.manifest);
         currentBeatIndex = startIdx;
+        // Notify parent of sources for TutorBox citation resolution.
+        onLessonSources?.(manifestState.manifest.sources);
         await writeLessonStarted();
         const beat = manifestState.manifest.beats[startIdx];
-        if (beat) await writeBeatViewed(beat.id);
+        if (beat) {
+          await writeBeatViewed(beat.id);
+          onCurrentBeatId?.(beat.id);
+        }
         await renderCurrentVisual(manifestState.manifest, startIdx);
       }
     })();
@@ -346,6 +395,7 @@
             : ""}
           {readExcerpt}
           onBeatComplete={handleBeatComplete}
+          {narrationPaused}
         />
       {:else}
         <div class="status-center">
