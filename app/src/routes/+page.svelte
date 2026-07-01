@@ -1,211 +1,325 @@
 <script lang="ts">
+  /**
+   * teach-me Player — root page.
+   *
+   * States:
+   *   idle        → "Open Course Folder" button (+ dev fixture shortcut)
+   *   loading     → validating workspace
+   *   not_a_course → friendly error
+   *   ready       → CourseScreen
+   *
+   * The sidecar health check remains in a collapsed status strip so the
+   * tutor (Phase 4) can reflect its status; it doesn't block course browsing.
+   *
+   * Seam for 005/006: `handleLaunch(lessonId)` is called when the learner
+   * clicks Launch on the course screen.  Wire it to the playback route in
+   * issue 005.
+   */
+
   import { onMount, onDestroy } from "svelte";
+  import { open as openDialog } from "@tauri-apps/plugin-dialog";
+  import { readTextFile, exists } from "@tauri-apps/plugin-fs";
+  import { pollSidecarHealth } from "$lib/sidecar.js";
+  import { validateWorkspace } from "$lib/workspace.js";
+  import { loadProgress } from "$lib/progress.js";
+  import CourseScreen from "$lib/CourseScreen.svelte";
+  import type { FsAdapter, WorkspaceValidationResult } from "$lib/workspace.js";
+  import type { CourseProgress } from "$lib/progress.js";
 
-  const SIDECAR_BASE = "http://127.0.0.1:17861";
+  // ---------------------------------------------------------------------------
+  // Tauri fs adapter — wraps plugin-fs for injection into pure workspace logic
+  // ---------------------------------------------------------------------------
 
-  // --- state (Svelte 5 runes) ---
-  let status = $state<"waiting" | "ready" | "error">("waiting");
-  let statusMessage = $state("Waiting for sidecar…");
-  let speakText = $state("Hello — this is teach-me Player speaking via kokoro-onnx.");
-  let voice = $state("af_heart");
-  let langCode = $state("a");
-  let speed = $state(1.0);
-  let isSpeaking = $state(false);
-  let speakError = $state<string | null>(null);
+  const tauriFsAdapter: FsAdapter = {
+    readTextFile: (path) => readTextFile(path),
+    exists: (path) => exists(path),
+  };
 
-  // --- health poll ---
-  let pollTimer: ReturnType<typeof setTimeout> | null = null;
-  let pollCount = 0;
-  const MAX_POLLS = 120; // 2 min at 1s intervals
+  // ---------------------------------------------------------------------------
+  // Sidecar health (used by the tutor in Phase 4; shown as a small status strip)
+  // ---------------------------------------------------------------------------
 
-  async function pollHealth() {
-    if (pollCount >= MAX_POLLS) {
-      status = "error";
-      statusMessage = "Sidecar did not start in time — check logs.";
-      return;
-    }
-    pollCount++;
-    try {
-      const res = await fetch(`${SIDECAR_BASE}/health`);
-      if (res.ok) {
-        status = "ready";
-        statusMessage = "Sidecar ready.";
-        return; // stop polling
-      }
-    } catch {
-      // not up yet — keep polling
-    }
-    pollTimer = setTimeout(pollHealth, 1000);
-  }
+  let sidecarStatus = $state<"waiting" | "ready" | "error">("waiting");
+
+  let cancelHealthPoll: (() => void) | null = null;
 
   onMount(() => {
-    pollHealth();
+    cancelHealthPoll = pollSidecarHealth(
+      () => { sidecarStatus = "ready"; },
+      () => { sidecarStatus = "error"; },
+    );
   });
 
   onDestroy(() => {
-    if (pollTimer !== null) clearTimeout(pollTimer);
+    cancelHealthPoll?.();
   });
 
-  // --- speak ---
-  async function handleSpeak() {
-    if (status !== "ready" || isSpeaking) return;
-    isSpeaking = true;
-    speakError = null;
-    statusMessage = "Synthesising…";
+  // ---------------------------------------------------------------------------
+  // Workspace state machine
+  // ---------------------------------------------------------------------------
+
+  type PageState =
+    | { phase: "idle" }
+    | { phase: "loading" }
+    | { phase: "not_a_course"; reason: string }
+    | { phase: "ready"; result: WorkspaceValidationResult & { kind: "valid" }; progress: CourseProgress };
+
+  let pageState = $state<PageState>({ phase: "idle" });
+
+  // Dev affordance: if running in dev mode, allow loading the fixture path
+  // directly without a dialog.  Gated on import.meta.env.DEV so it compiles
+  // away in production builds.
+  const DEV_FIXTURE_PATH =
+    "/Users/ollie/development/teachmeplayer/docs/fixtures/example-course";
+
+  /** Load a workspace from a folder path (used by both the dialog and dev shortcut). */
+  async function loadWorkspace(folderPath: string) {
+    pageState = { phase: "loading" };
     try {
-      const res = await fetch(`${SIDECAR_BASE}/speak`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          text: speakText,
-          voice,
-          lang_code: langCode,
-          speed,
-        }),
-      });
-      if (!res.ok) {
-        const detail = await res.text();
-        throw new Error(`HTTP ${res.status}: ${detail}`);
+      const result = await validateWorkspace(folderPath, tauriFsAdapter);
+
+      if (result.kind === "not_a_course") {
+        pageState = { phase: "not_a_course", reason: result.reason };
+        return;
       }
-      const blob = await res.blob();
-      const url = URL.createObjectURL(blob);
-      const audio = new Audio(url);
-      audio.onended = () => {
-        URL.revokeObjectURL(url);
-        statusMessage = "Done.";
-        isSpeaking = false;
-      };
-      audio.onerror = (e) => {
-        URL.revokeObjectURL(url);
-        speakError = "Audio playback error.";
-        statusMessage = "Sidecar ready.";
-        isSpeaking = false;
-      };
-      statusMessage = "Playing…";
-      await audio.play();
+
+      const lessonIds = result.course.lessons.map((l) => l.lesson_id);
+      const progress = await loadProgress(folderPath, lessonIds, tauriFsAdapter);
+
+      pageState = { phase: "ready", result, progress };
     } catch (e) {
-      speakError = String(e);
-      statusMessage = "Sidecar ready.";
-      isSpeaking = false;
+      pageState = {
+        phase: "not_a_course",
+        reason: `Unexpected error: ${String(e)}`,
+      };
     }
+  }
+
+  /** Open a folder picker dialog and load the selected workspace. */
+  async function handleOpenWorkspace() {
+    const selected = await openDialog({ directory: true, multiple: false });
+    if (!selected) return; // user cancelled
+    const folderPath = typeof selected === "string" ? selected : selected[0];
+    if (!folderPath) return;
+    await loadWorkspace(folderPath);
+  }
+
+  /** Dev shortcut: load the fixture directly. */
+  async function handleLoadFixture() {
+    await loadWorkspace(DEV_FIXTURE_PATH);
+  }
+
+  function handleClose() {
+    pageState = { phase: "idle" };
+  }
+
+  /**
+   * Seam for 005/006 — called when the learner clicks "Launch" on a lesson.
+   * Replace this with a navigation call (e.g. goto(`/lesson/${lessonId}`))
+   * once the playback route exists.
+   */
+  function handleLaunch(lessonId: string) {
+    // TODO (issue-005): navigate to the lesson playback view
+    console.log("[teach-me] launch lesson", lessonId);
+    alert(`Lesson ${lessonId} playback — coming in issue 005!`);
   }
 </script>
 
+<!-- ── Sidecar status strip ───────────────────────────────────────────────── -->
+<div
+  class="sidecar-strip"
+  class:sidecar-strip--ready={sidecarStatus === "ready"}
+  class:sidecar-strip--error={sidecarStatus === "error"}
+  aria-label="Sidecar status"
+>
+  {#if sidecarStatus === "waiting"}
+    Tutor warming up…
+  {:else if sidecarStatus === "ready"}
+    Tutor ready
+  {:else}
+    Tutor unavailable
+  {/if}
+</div>
+
+<!-- ── Main content ──────────────────────────────────────────────────────── -->
 <main class="shell">
-  <h1>teach-me Player</h1>
-  <p class="status" class:ready={status === "ready"} class:error={status === "error"}>
-    {statusMessage}
-  </p>
+  {#if pageState.phase === "idle"}
+    <div class="landing">
+      <h1>teach-me Player</h1>
+      <p class="landing-sub">Pick a course folder to begin.</p>
+      <button class="btn-primary" onclick={handleOpenWorkspace}>
+        Open Course Folder
+      </button>
 
-  <section class="speak-form">
-    <label for="speak-text">Text</label>
-    <textarea
-      id="speak-text"
-      rows="3"
-      bind:value={speakText}
-      disabled={status !== "ready" || isSpeaking}
-    ></textarea>
-
-    <div class="row">
-      <label for="voice">Voice</label>
-      <input id="voice" type="text" bind:value={voice} disabled={status !== "ready" || isSpeaking} />
-
-      <label for="lang">Lang code</label>
-      <input id="lang" type="text" bind:value={langCode} disabled={status !== "ready" || isSpeaking} style="width:3rem" />
-
-      <label for="speed">Speed</label>
-      <input id="speed" type="number" bind:value={speed} min="0.5" max="2.0" step="0.1"
-        disabled={status !== "ready" || isSpeaking} style="width:4rem" />
+      {#if import.meta.env.DEV}
+        <div class="dev-fixture">
+          <span class="dev-label">DEV</span>
+          <button class="btn-ghost-small" onclick={handleLoadFixture}>
+            Load example-course fixture
+          </button>
+        </div>
+      {/if}
     </div>
 
-    <button
-      id="speak-btn"
-      onclick={handleSpeak}
-      disabled={status !== "ready" || isSpeaking}
-    >
-      {isSpeaking ? "Speaking…" : "Speak"}
-    </button>
-  </section>
+  {:else if pageState.phase === "loading"}
+    <div class="loading">
+      <p>Checking course folder…</p>
+    </div>
 
-  {#if speakError}
-    <p class="error-msg">Error: {speakError}</p>
+  {:else if pageState.phase === "not_a_course"}
+    <div class="error-state">
+      <h1>This folder isn't a course</h1>
+      <p class="error-reason">{pageState.reason}</p>
+      <button class="btn-primary" onclick={handleOpenWorkspace}>
+        Try Another Folder
+      </button>
+      {#if import.meta.env.DEV}
+        <button class="btn-ghost-small" onclick={handleLoadFixture}>
+          Load fixture instead
+        </button>
+      {/if}
+    </div>
+
+  {:else if pageState.phase === "ready"}
+    <CourseScreen
+      course={pageState.result.course}
+      lessons={pageState.result.lessons}
+      progress={pageState.progress}
+      onLaunch={handleLaunch}
+      onClose={handleClose}
+    />
   {/if}
 </main>
 
 <style>
+  /* Sidecar strip */
+  .sidecar-strip {
+    position: fixed;
+    top: 0;
+    right: 0;
+    font-size: 0.72rem;
+    padding: 0.25rem 0.75rem;
+    background: #f3f4f6;
+    color: #666;
+    border-bottom-left-radius: 6px;
+    z-index: 100;
+  }
+  .sidecar-strip--ready { background: #dcfce7; color: #166534; }
+  .sidecar-strip--error { background: #fee2e2; color: #991b1b; }
+
+  /* Shell */
   :global(body) {
     font-family: -apple-system, system-ui, sans-serif;
     background: #f5f5f5;
     margin: 0;
     padding: 0;
+    min-height: 100vh;
   }
 
   .shell {
-    max-width: 36rem;
-    margin: 4rem auto;
-    padding: 0 1.5rem;
+    min-height: 100vh;
   }
 
-  h1 {
-    font-size: 1.5rem;
-    margin-bottom: 0.5rem;
-  }
-
-  .status {
-    color: #666;
-    margin-bottom: 1.5rem;
-    font-size: 0.95rem;
-  }
-  .status.ready { color: #2a7a2a; }
-  .status.error { color: #c0392b; }
-
-  .speak-form {
+  /* Landing */
+  .landing {
     display: flex;
     flex-direction: column;
-    gap: 0.5rem;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    gap: 1rem;
+    text-align: center;
+    padding: 2rem;
   }
 
-  label {
-    font-size: 0.85rem;
-    font-weight: 600;
-    color: #333;
+  .landing h1 {
+    font-size: 2rem;
+    font-weight: 700;
+    color: #111;
+    margin: 0;
   }
 
-  textarea, input[type="text"], input[type="number"] {
+  .landing-sub {
+    color: #555;
+    margin: 0;
+  }
+
+  /* Loading */
+  .loading {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    color: #555;
+  }
+
+  /* Error */
+  .error-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    gap: 1rem;
+    text-align: center;
+    padding: 2rem;
+    max-width: 36rem;
+    margin: 0 auto;
+  }
+
+  .error-state h1 {
+    font-size: 1.5rem;
+    color: #111;
+    margin: 0;
+  }
+
+  .error-reason {
+    color: #c0392b;
+    font-size: 0.95rem;
+    margin: 0;
+  }
+
+  /* Buttons */
+  .btn-primary {
     font-size: 1rem;
-    padding: 0.4rem 0.6rem;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-    box-sizing: border-box;
+    font-weight: 600;
+    padding: 0.65rem 1.5rem;
+    background: #3b82f6;
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background 0.15s;
   }
+  .btn-primary:hover { background: #2563eb; }
 
-  textarea { width: 100%; resize: vertical; }
+  .btn-ghost-small {
+    background: none;
+    border: none;
+    font-family: inherit;
+    font-size: 0.8rem;
+    color: #888;
+    cursor: pointer;
+    padding: 0.25rem 0;
+    text-decoration: underline;
+  }
+  .btn-ghost-small:hover { color: #555; }
 
-  .row {
+  /* Dev fixture bar */
+  .dev-fixture {
     display: flex;
     align-items: center;
     gap: 0.5rem;
-    flex-wrap: wrap;
-  }
-
-  button {
     margin-top: 0.5rem;
-    font-size: 1rem;
-    padding: 0.6rem 1.4rem;
-    background: #3b82f6;
-    color: white;
-    border: none;
-    border-radius: 6px;
-    cursor: pointer;
-    transition: background 0.2s;
-    align-self: flex-start;
   }
-  button:hover:not(:disabled) { background: #2563eb; }
-  button:disabled { background: #9ca3af; cursor: not-allowed; }
 
-  .error-msg {
-    color: #c0392b;
-    font-size: 0.9rem;
-    margin-top: 0.75rem;
+  .dev-label {
+    font-size: 0.65rem;
+    font-weight: 700;
+    background: #fbbf24;
+    color: #451a03;
+    padding: 0.1rem 0.35rem;
+    border-radius: 3px;
+    letter-spacing: 0.06em;
   }
 </style>
