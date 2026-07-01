@@ -1,0 +1,16 @@
+{
+  "schema_version": "1.0",
+  "title": "Understanding Interest Rates",
+  "mission_ref": "MISSION.md",
+  "voice": { "engine": "kokoro", "lang_code": "a", "voice": "af_heart", "speed": 1.0 },
+  "lessons": [
+    {
+      "lesson_id": "0001",
+      "slug": "interest-rate-lags",
+      "title": "Why Rate Changes Take Time",
+      "status": "ready"
+    }
+  ],
+  "created": "2026-06-30T10:00:00Z",
+  "generated_by": "teach-me 0.1 (example)"
+}

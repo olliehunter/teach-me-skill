@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 450" class="visual" role="img" aria-label="Base rate sits beneath the rates banks charge households and businesses">
+  <style>
+    .v-bg{fill:#fbfaf7}.v-ink{fill:#1a1a1a}.v-muted{fill:#6b6b6b}.v-accent{fill:#b5482e}
+    .v-title{font:600 26px -apple-system,Segoe UI,Helvetica,Arial,sans-serif}
+    .v-lab{font:15px -apple-system,Segoe UI,Helvetica,Arial,sans-serif}
+    .v-small{font:12px -apple-system,Segoe UI,Helvetica,Arial,sans-serif}
+    .v-box{fill:#fff;stroke:#d8d4cc;stroke-width:1.5}
+    .v-base{fill:#f4e7e2;stroke:#b5482e;stroke-width:2}
+  </style>
+  <rect class="v-bg" width="800" height="450"/>
+  <text class="v-title v-ink" x="48" y="64">What the base rate is</text>
+
+  <rect class="v-box" x="120" y="110" width="240" height="54" rx="6"/>
+  <text class="v-lab v-ink" x="240" y="143" text-anchor="middle">Rates on business loans</text>
+  <rect class="v-box" x="440" y="110" width="240" height="54" rx="6"/>
+  <text class="v-lab v-ink" x="560" y="143" text-anchor="middle">Mortgage &amp; savings rates</text>
+
+  <line x1="240" y1="164" x2="240" y2="250" stroke="#b5482e" stroke-width="2"/>
+  <line x1="560" y1="164" x2="560" y2="250" stroke="#b5482e" stroke-width="2"/>
+
+  <rect class="v-base" x="160" y="252" width="480" height="60" rx="8"/>
+  <text class="v-lab v-accent" x="400" y="280" text-anchor="middle" font-weight="600">BASE RATE</text>
+  <text class="v-small v-muted" x="400" y="300" text-anchor="middle">set by the central bank — the floor everything else is built on</text>
+
+  <a href="https://www.bankofengland.co.uk/monetary-policy" target="_blank">
+    <text class="v-small v-muted" x="48" y="420">Source: Bank of England — Monetary policy (s1)</text>
+  </a>
+</svg>

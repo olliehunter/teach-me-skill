@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 450" class="visual" role="img" aria-label="Timeline showing a rate change building to full effect over about two years">
+  <style>
+    .v-bg{fill:#fbfaf7}.v-ink{fill:#1a1a1a}.v-muted{fill:#6b6b6b}.v-accent{fill:#b5482e}
+    .v-title{font:600 26px -apple-system,Segoe UI,Helvetica,Arial,sans-serif}
+    .v-lab{font:15px -apple-system,Segoe UI,Helvetica,Arial,sans-serif}
+    .v-small{font:12px -apple-system,Segoe UI,Helvetica,Arial,sans-serif}
+  </style>
+  <rect class="v-bg" width="800" height="450"/>
+  <text class="v-title v-ink" x="48" y="64">Long and variable lags</text>
+
+  <!-- effect ramp -->
+  <path d="M120,330 C320,325 430,150 680,140 L680,330 Z" fill="#f4e7e2"/>
+  <path d="M120,330 C320,325 430,150 680,140" fill="none" stroke="#b5482e" stroke-width="3"/>
+
+  <!-- baseline / timeline -->
+  <line x1="120" y1="330" x2="700" y2="330" stroke="#1a1a1a" stroke-width="2"/>
+  <g class="v-small v-muted" text-anchor="middle">
+    <line x1="120" y1="330" x2="120" y2="340" stroke="#6b6b6b"/><text x="120" y="358">rate change</text>
+    <line x1="400" y1="330" x2="400" y2="340" stroke="#6b6b6b"/><text x="400" y="358">~1 year</text>
+    <line x1="680" y1="330" x2="680" y2="340" stroke="#6b6b6b"/><text x="680" y="358">~2 years</text>
+  </g>
+
+  <text class="v-small v-accent" x="470" y="130" font-weight="600">full effect on the economy</text>
+  <text class="v-small v-muted" x="150" y="315">small effect at first…</text>
+
+  <a href="https://www.bankofengland.co.uk/monetary-policy" target="_blank">
+    <text class="v-small v-muted" x="48" y="420">Source: Bank of England — Monetary policy (s1)</text>
+  </a>
+</svg>

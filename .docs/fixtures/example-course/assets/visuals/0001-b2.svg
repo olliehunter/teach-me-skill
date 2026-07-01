@@ -1,0 +1,35 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 450" class="visual" role="img" aria-label="A higher base rate pushes the demand curve downward">
+  <style>
+    .v-bg{fill:#fbfaf7}.v-ink{fill:#1a1a1a}.v-muted{fill:#6b6b6b}.v-accent{fill:#b5482e}
+    .v-title{font:600 26px -apple-system,Segoe UI,Helvetica,Arial,sans-serif}
+    .v-lab{font:15px -apple-system,Segoe UI,Helvetica,Arial,sans-serif}
+    .v-small{font:12px -apple-system,Segoe UI,Helvetica,Arial,sans-serif}
+  </style>
+  <rect class="v-bg" width="800" height="450"/>
+  <text class="v-title v-ink" x="48" y="64">Higher rate, cooler demand</text>
+
+  <!-- axes -->
+  <line x1="120" y1="110" x2="120" y2="360" stroke="#1a1a1a" stroke-width="2"/>
+  <line x1="120" y1="360" x2="680" y2="360" stroke="#1a1a1a" stroke-width="2"/>
+  <text class="v-small v-muted" x="60" y="120">spending</text>
+  <text class="v-small v-muted" x="620" y="385">time →</text>
+
+  <!-- before curve -->
+  <path d="M150,180 C300,175 460,185 660,200" fill="none" stroke="#6b6b6b" stroke-width="2.5" stroke-dasharray="6 5"/>
+  <text class="v-small v-muted" x="540" y="180">before</text>
+
+  <!-- after curve, lower -->
+  <path d="M150,180 C320,230 470,300 660,320" fill="none" stroke="#b5482e" stroke-width="3"/>
+  <text class="v-small v-accent" x="540" y="335" font-weight="600">after rate rise</text>
+
+  <!-- rate-up marker -->
+  <g transform="translate(150,150)">
+    <line x1="0" y1="40" x2="0" y2="0" stroke="#b5482e" stroke-width="3"/>
+    <path d="M-7,10 L0,-4 L7,10 Z" fill="#b5482e"/>
+    <text class="v-small v-accent" x="10" y="6" font-weight="600">rate up</text>
+  </g>
+
+  <a href="https://www.bankofengland.co.uk/monetary-policy" target="_blank">
+    <text class="v-small v-muted" x="48" y="420">Source: Bank of England — Monetary policy (s1)</text>
+  </a>
+</svg>

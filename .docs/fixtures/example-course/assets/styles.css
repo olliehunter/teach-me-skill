@@ -1,0 +1,20 @@
+/* Shared component: one stylesheet so every visual looks like one course.
+   Tufte-ish: generous whitespace, restrained palette, readable type. */
+:root {
+  --ink: #1a1a1a;
+  --muted: #6b6b6b;
+  --accent: #b5482e;
+  --paper: #fbfaf7;
+  --rule: #d8d4cc;
+  --font: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+}
+.visual {
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--font);
+}
+.visual .title { font-size: 22px; font-weight: 600; }
+.visual .label { font-size: 14px; fill: var(--ink); }
+.visual .muted { fill: var(--muted); }
+.visual .accent { fill: var(--accent); stroke: var(--accent); }
+.visual .rule { stroke: var(--rule); stroke-width: 1.5; }
