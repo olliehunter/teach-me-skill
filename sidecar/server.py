@@ -5,6 +5,8 @@ Synthesises speech via kokoro-onnx (no PyTorch dependency).
 Endpoints:
   GET  /health                              -> {"status":"ok"}  (model lazy-loaded; instant)
   POST /speak  {text, voice, lang_code, speed} -> audio/wav
+  POST /tutor  {question, workspace_path, lesson_id, beat_id}
+               -> {answer_text, used_sources, no_key}
 
 Voice/lang/speed come from the request body — no hardcoded env vars.
 Model files are located via KOKORO_MODEL and KOKORO_VOICES env vars.
@@ -12,8 +14,11 @@ Model files are located via KOKORO_MODEL and KOKORO_VOICES env vars.
 Run standalone for testing:  python server.py   (serves on 127.0.0.1:17861)
 """
 
+from __future__ import annotations
+
 import io
 import os
+from typing import Optional
 
 import numpy as np
 import soundfile as sf
@@ -58,7 +63,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-_kokoro: object | None = None
+_kokoro: Optional[object] = None
 
 
 def get_kokoro():
@@ -80,6 +85,37 @@ class SpeakRequest(BaseModel):
 @app.get("/health")
 def health():
     return {"status": "ok"}
+
+
+class TutorRequest(BaseModel):
+    question: str
+    workspace_path: str
+    lesson_id: str
+    beat_id: Optional[str] = None
+    model: Optional[str] = None
+
+
+@app.post("/tutor")
+def tutor(req: TutorRequest):
+    """
+    Grounded tutor endpoint.
+
+    Assembles lesson context (MISSION.md + objective + beat narrations + source
+    excerpts) and calls Claude via the anthropic SDK with structured output.
+
+    Always returns JSON — never a 500. If ANTHROPIC_API_KEY is absent the
+    response carries no_key=True with an informational answer_text.
+    """
+    from tutor import TutorResult, call_tutor
+
+    result: TutorResult = call_tutor(
+        question=req.question,
+        workspace_path=req.workspace_path,
+        lesson_id=req.lesson_id,
+        beat_id=req.beat_id,
+        model=req.model,
+    )
+    return result.model_dump()
 
 
 @app.post("/speak")
