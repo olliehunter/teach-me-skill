@@ -42,6 +42,12 @@
     audioSrc: string;             // asset-protocol URL for the audio file
     /** Reads sources/<id>.md; called when user opens a source panel. */
     readExcerpt: (excerptRef: string) => Promise<string>;
+    /**
+     * Called when audio playback ends naturally.
+     * Wired by the transport (LessonPlayer via BeatView) to trigger auto-advance.
+     * Optional — when absent (e.g. standalone use), no auto-advance occurs.
+     */
+    onBeatComplete?: () => void;
   }
 
   let {
@@ -54,6 +60,7 @@
     imageAlt,
     audioSrc,
     readExcerpt,
+    onBeatComplete,
   }: Props = $props();
 
   // ---------------------------------------------------------------------------
@@ -153,14 +160,19 @@
   <!-- ── Audio player ────────────────────────────────────────────────────── -->
   <div class="audio-row">
     {#if audioSrc}
-      <!-- autoplay is deliberately off; 006 (transport) controls playback.
-           controls=true lets the learner play/pause manually in this substrate. -->
+      <!--
+        onended fires when the audio finishes playing naturally.
+        The transport (LessonPlayer via BeatView) wires onBeatComplete here
+        to trigger auto-advance to the next beat.
+        controls=true lets the learner play/pause manually as well.
+      -->
       <audio
         class="audio-player"
         src={audioSrc}
         controls
         preload="auto"
         aria-label="Narration audio"
+        onended={() => onBeatComplete?.()}
       ></audio>
     {:else}
       <p class="audio-missing">Audio not available for this beat.</p>

@@ -3,7 +3,7 @@
  */
 
 import { describe, it, expect } from "vitest";
-import { loadProgress, completionSummary } from "./progress.js";
+import { loadProgress, completionSummary, resumeBeatIndex } from "./progress.js";
 import type { FsAdapter } from "./workspace.js";
 
 // ---------------------------------------------------------------------------
@@ -140,6 +140,92 @@ describe("loadProgress", () => {
     const result = await loadProgress(WORKSPACE, LESSON_IDS, fs);
 
     expect(result.lessons.get("0001")?.lastBeatId).toBe("b3");
+  });
+});
+
+describe("loadProgress — duplicate-event safety", () => {
+  it("duplicate beat_viewed events do not corrupt lastBeatId (last one wins)", async () => {
+    // A learner viewed b2, then b3, then somehow b2 again (e.g. back-nav replay).
+    // lastBeatId should be the LAST beat_viewed in the log, not the furthest.
+    // This is correct: fold gives us resume state, not furthest-ever-reached.
+    // The FURTHEST is computed by resumeBeatIndex scanning the beatIds array.
+    const fs = makeFs({
+      [PROGRESS_PATH]: lines(
+        { ts: "2026-01-01T10:00:00Z", lesson: "0001", beat: "b1", event: "beat_viewed" },
+        { ts: "2026-01-01T10:01:00Z", lesson: "0001", beat: "b2", event: "beat_viewed" },
+        { ts: "2026-01-01T10:02:00Z", lesson: "0001", beat: "b3", event: "beat_viewed" },
+        { ts: "2026-01-01T10:03:00Z", lesson: "0001", beat: "b2", event: "beat_viewed" }, // went back
+      ),
+    });
+
+    const result = await loadProgress(WORKSPACE, LESSON_IDS, fs);
+    // Last event was b2 so lastBeatId = b2
+    expect(result.lessons.get("0001")?.lastBeatId).toBe("b2");
+  });
+
+  it("lesson_completed followed by repeated beat_viewed does NOT downgrade to in_progress", async () => {
+    const fs = makeFs({
+      [PROGRESS_PATH]: lines(
+        { ts: "2026-01-01T10:00:00Z", lesson: "0001", event: "lesson_started" },
+        { ts: "2026-01-01T10:01:00Z", lesson: "0001", beat: "b1", event: "beat_viewed" },
+        { ts: "2026-01-01T10:02:00Z", lesson: "0001", beat: "b2", event: "beat_viewed" },
+        { ts: "2026-01-01T10:03:00Z", lesson: "0001", event: "lesson_completed" },
+        // Duplicate / stale events after completion — must not corrupt state
+        { ts: "2026-01-01T10:04:00Z", lesson: "0001", beat: "b2", event: "beat_viewed" },
+        { ts: "2026-01-01T10:05:00Z", lesson: "0001", event: "lesson_started" },
+      ),
+    });
+
+    const result = await loadProgress(WORKSPACE, LESSON_IDS, fs);
+    expect(result.lessons.get("0001")?.state).toBe("completed");
+    expect(result.completedCount).toBe(1);
+  });
+
+  it("re-folding identical log produces identical state (idempotent)", async () => {
+    const logContent = lines(
+      { ts: "2026-01-01T10:00:00Z", lesson: "0001", event: "lesson_started" },
+      { ts: "2026-01-01T10:01:00Z", lesson: "0001", beat: "b1", event: "beat_viewed" },
+      { ts: "2026-01-01T10:02:00Z", lesson: "0001", beat: "b2", event: "beat_viewed" },
+    );
+    const fs = makeFs({ [PROGRESS_PATH]: logContent });
+
+    const r1 = await loadProgress(WORKSPACE, LESSON_IDS, fs);
+    const r2 = await loadProgress(WORKSPACE, LESSON_IDS, fs);
+
+    expect(r1.lessons.get("0001")?.state).toBe(r2.lessons.get("0001")?.state);
+    expect(r1.lessons.get("0001")?.lastBeatId).toBe(r2.lessons.get("0001")?.lastBeatId);
+  });
+});
+
+describe("resumeBeatIndex", () => {
+  const BEAT_IDS = ["b1", "b2", "b3", "b4"];
+
+  it("returns 0 when progress is undefined", () => {
+    expect(resumeBeatIndex(BEAT_IDS, undefined)).toBe(0);
+  });
+
+  it("returns 0 when lastBeatId is not set", () => {
+    expect(resumeBeatIndex(BEAT_IDS, { lessonId: "0001", state: "not_started" })).toBe(0);
+  });
+
+  it("returns the correct index for a known beat id", () => {
+    expect(resumeBeatIndex(BEAT_IDS, { lessonId: "0001", state: "in_progress", lastBeatId: "b3" })).toBe(2);
+  });
+
+  it("returns 0 when lastBeatId is not in the beatIds array (stale id)", () => {
+    expect(resumeBeatIndex(BEAT_IDS, { lessonId: "0001", state: "in_progress", lastBeatId: "b99" })).toBe(0);
+  });
+
+  it("returns 0 for the first beat", () => {
+    expect(resumeBeatIndex(BEAT_IDS, { lessonId: "0001", state: "in_progress", lastBeatId: "b1" })).toBe(0);
+  });
+
+  it("returns last index for the last beat", () => {
+    expect(resumeBeatIndex(BEAT_IDS, { lessonId: "0001", state: "in_progress", lastBeatId: "b4" })).toBe(3);
+  });
+
+  it("handles empty beatIds array gracefully", () => {
+    expect(resumeBeatIndex([], { lessonId: "0001", state: "in_progress", lastBeatId: "b1" })).toBe(0);
   });
 });
 

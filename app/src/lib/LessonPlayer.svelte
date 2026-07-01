@@ -1,44 +1,73 @@
 <script lang="ts">
   /**
-   * LessonPlayer — substrate for playing a lesson one beat at a time.
+   * LessonPlayer — full lesson playback with transport + progress writing.
    *
-   * Responsibilities for issue 005:
-   *   - Load the lesson manifest from the workspace.
+   * Issue 006 responsibilities:
+   *   - Load the lesson manifest (once per lessonId).
    *   - Inject workspace assets/styles.css once as a global <style> block.
-   *   - Render the current beat (starting at beat index 0).
-   *   - Compute the rendered visual (reads file / converts to asset URL).
-   *   - Provide readExcerpt() for the SourcePanel.
-   *
-   * Issue 006 (transport) will wrap this and add prev/next navigation.
-   * The `beatIndex` prop is exposed so 006 can control which beat is shown.
+   *   - Dispatch each beat through BeatView (the beat-type seam for 007/008).
+   *   - Transport: auto-advance on narration audio ended; manual pause/play,
+   *     replay-beat, back, next.
+   *   - Beat-nav edges: back@first → onBack(); next@last → lesson_completed
+   *     → onCompleted(lessonId).
+   *   - Progress writing: lesson_started, beat_viewed (on enter), flag_lost,
+   *     lesson_completed.
+   *   - Resume: accepts `initialBeatIndex` (derived from progress fold by
+   *     the parent); clamps it to valid range.
    *
    * Props:
-   *   lessonId     — the lesson to load (e.g. "0001").
-   *   workspacePath — absolute path to the workspace root.
-   *   beatIndex    — index of the beat to display (default 0; 006 drives this).
-   *   onBack       — called when the learner wants to return to the course screen.
+   *   lessonId         — lesson to load (e.g. "0001").
+   *   workspacePath    — absolute path to workspace root.
+   *   initialBeatIndex — starting beat (default 0; set from progress fold for resume).
+   *   onBack           — called when learner returns to course screen (back at first beat).
+   *   onCompleted      — called when lesson_completed fires; parent highlights next lesson.
+   *   progressWriter   — typed writer injected by parent (testable).
    */
 
   import { onMount } from "svelte";
   import { readTextFile } from "@tauri-apps/plugin-fs";
   import { convertFileSrc } from "@tauri-apps/api/core";
-  import NarrationBeatView from "./NarrationBeatView.svelte";
+  import BeatView from "./BeatView.svelte";
   import { renderVisual } from "./visualRenderer.js";
-  import type { LessonManifest, NarrationBeat } from "./types.js";
+  import { stepBack, stepNext, clampBeatIndex } from "./transport.js";
+  import { buildEvent } from "./progressWriter.js";
+  import { resumeBeatIndex } from "./progress.js";
+  import type { LessonManifest } from "./types.js";
   import type { FsAdapter } from "./workspace.js";
   import type { RenderedVisual } from "./visualRenderer.js";
+  import type { ProgressWriter } from "./progressWriter.js";
 
   interface Props {
     lessonId: string;
     workspacePath: string;
-    beatIndex?: number;
+    /**
+     * Beat id to resume from (derived from progress fold by the parent).
+     * If provided, LessonPlayer resolves it to a beat index after loading
+     * the manifest.  Takes precedence over initialBeatIndex.
+     */
+    resumeFromBeatId?: string | null;
+    /**
+     * Fallback starting beat index (default 0).
+     * Ignored when resumeFromBeatId is provided and resolves to a valid beat.
+     */
+    initialBeatIndex?: number;
     onBack: () => void;
+    onCompleted: (lessonId: string) => void;
+    progressWriter: ProgressWriter;
   }
 
-  let { lessonId, workspacePath, beatIndex = 0, onBack }: Props = $props();
+  let {
+    lessonId,
+    workspacePath,
+    resumeFromBeatId = null,
+    initialBeatIndex = 0,
+    onBack,
+    onCompleted,
+    progressWriter,
+  }: Props = $props();
 
   // ---------------------------------------------------------------------------
-  // Tauri fs adapter
+  // Tauri fs adapter (read-only; writing goes through progressWriter)
   // ---------------------------------------------------------------------------
 
   const tauriFsAdapter: FsAdapter = {
@@ -54,40 +83,36 @@
   };
 
   // ---------------------------------------------------------------------------
-  // Load state
+  // Load state — manifest loaded once per lessonId
   // ---------------------------------------------------------------------------
 
-  type LoadState =
+  type ManifestState =
     | { phase: "loading" }
     | { phase: "error"; message: string }
-    | {
-        phase: "ready";
-        manifest: LessonManifest;
-        rendered: RenderedVisual;
-      };
+    | { phase: "ready"; manifest: LessonManifest };
 
-  let loadState = $state<LoadState>({ phase: "loading" });
+  let manifestState = $state<ManifestState>({ phase: "loading" });
 
   // ---------------------------------------------------------------------------
-  // Derived: current narration beat
+  // Transport state
   // ---------------------------------------------------------------------------
 
-  function getNarrationBeat(
-    manifest: LessonManifest,
-    idx: number,
-  ): NarrationBeat | null {
-    const beat = manifest.beats[idx];
-    if (!beat || beat.type !== "narration") return null;
-    return beat as NarrationBeat;
-  }
+  /** 0-based index of the current beat. */
+  let currentBeatIndex = $state(0);
 
   // ---------------------------------------------------------------------------
-  // styles.css injection (once per lesson load)
+  // Visual render cache — one RenderedVisual per beat index
+  // ---------------------------------------------------------------------------
+
+  let renderedVisual = $state<RenderedVisual>({ kind: "none" });
+
+  // ---------------------------------------------------------------------------
+  // styles.css injection (idempotent, once per session)
   // ---------------------------------------------------------------------------
 
   async function injectWorkspaceStyles(wp: string) {
     const styleId = "workspace-styles";
-    if (document.getElementById(styleId)) return; // already injected
+    if (document.getElementById(styleId)) return;
     try {
       const css = await readTextFile(`${wp}/assets/styles.css`);
       const style = document.createElement("style");
@@ -95,130 +120,277 @@
       style.textContent = css;
       document.head.appendChild(style);
     } catch {
-      // styles.css is optional; silently skip if absent
+      // styles.css is optional
     }
   }
 
   // ---------------------------------------------------------------------------
-  // Load the lesson manifest + render visual for the current beat
+  // Find the lesson manifest path via course.json
   // ---------------------------------------------------------------------------
 
-  async function loadLesson() {
-    loadState = { phase: "loading" };
-    try {
-      // Inject workspace styles first (idempotent).
-      await injectWorkspaceStyles(workspacePath);
-
-      // Find and parse the lesson manifest.
-      const { course } = await findManifestPath(workspacePath, lessonId);
-      const raw = await readTextFile(course);
-      const manifest = JSON.parse(raw) as LessonManifest;
-
-      // Render the first beat's visual.
-      const beat = getNarrationBeat(manifest, beatIndex);
-      if (!beat) {
-        loadState = {
-          phase: "error",
-          message: `Beat at index ${beatIndex} is not a narration beat.`,
-        };
-        return;
-      }
-
-      const rendered = await renderVisual(
-        beat.visual,
-        workspacePath,
-        tauriFsAdapter,
-        convertFileSrc,
-      );
-
-      loadState = { phase: "ready", manifest, rendered };
-    } catch (e) {
-      loadState = { phase: "error", message: String(e) };
-    }
-  }
-
-  /**
-   * Locate the lesson JSON file.
-   * Matches lessons/<lessonId>-<any-slug>.json by scanning all files.
-   * For simplicity we try the manifest via course.json first.
-   */
-  async function findManifestPath(
-    wp: string,
-    lid: string,
-  ): Promise<{ course: string }> {
-    // Read course.json to get the slug.
-    const courseJsonPath = `${wp}/course.json`;
-    const courseRaw = await readTextFile(courseJsonPath);
-    const course = JSON.parse(courseRaw);
-    const ref = (course.lessons as Array<{ lesson_id: string; slug: string }>).find(
-      (l) => l.lesson_id === lid,
-    );
+  async function findManifestPath(wp: string, lid: string): Promise<string> {
+    const courseRaw = await readTextFile(`${wp}/course.json`);
+    const course = JSON.parse(courseRaw) as {
+      lessons: Array<{ lesson_id: string; slug: string }>;
+    };
+    const ref = course.lessons.find((l) => l.lesson_id === lid);
     if (!ref) throw new Error(`Lesson ${lid} not found in course.json`);
-    const lessonPath = `${wp}/lessons/${ref.lesson_id}-${ref.slug}.json`;
-    return { course: lessonPath };
+    return `${wp}/lessons/${ref.lesson_id}-${ref.slug}.json`;
   }
 
   // ---------------------------------------------------------------------------
-  // readExcerpt — passed to NarrationBeatView for the SourcePanel
+  // Load the manifest (once per lessonId / workspacePath)
+  // ---------------------------------------------------------------------------
+
+  async function loadManifest() {
+    manifestState = { phase: "loading" };
+    try {
+      await injectWorkspaceStyles(workspacePath);
+      const manifestPath = await findManifestPath(workspacePath, lessonId);
+      const raw = await readTextFile(manifestPath);
+      const manifest = JSON.parse(raw) as LessonManifest;
+      manifestState = { phase: "ready", manifest };
+    } catch (e) {
+      manifestState = { phase: "error", message: String(e) };
+    }
+  }
+
+  // ---------------------------------------------------------------------------
+  // Render the visual for the current beat
+  // ---------------------------------------------------------------------------
+
+  async function renderCurrentVisual(manifest: LessonManifest, beatIdx: number) {
+    const beat = manifest.beats[beatIdx];
+    if (!beat) {
+      renderedVisual = { kind: "none" };
+      return;
+    }
+    if (beat.type === "narration") {
+      try {
+        renderedVisual = await renderVisual(
+          beat.visual,
+          workspacePath,
+          tauriFsAdapter,
+          convertFileSrc,
+        );
+      } catch {
+        renderedVisual = { kind: "none" };
+      }
+    } else {
+      // Quiz / contested placeholders don't use a pre-rendered visual
+      renderedVisual = { kind: "none" };
+    }
+  }
+
+  // ---------------------------------------------------------------------------
+  // readExcerpt — passed to BeatView → NarrationBeatView → SourcePanel
   // ---------------------------------------------------------------------------
 
   async function readExcerpt(excerptRef: string): Promise<string> {
-    // excerpt_ref is workspace-relative (e.g. "sources/s1.md")
     return readTextFile(`${workspacePath}/${excerptRef}`);
   }
 
   // ---------------------------------------------------------------------------
-  // Reactive: reload when lessonId or beatIndex changes
+  // Progress helpers
   // ---------------------------------------------------------------------------
 
+  async function writeLessonStarted() {
+    await progressWriter.append(
+      buildEvent({ lesson: lessonId, event: "lesson_started" }),
+    );
+  }
+
+  async function writeBeatViewed(beatId: string) {
+    await progressWriter.append(
+      buildEvent({ lesson: lessonId, beat: beatId, event: "beat_viewed" }),
+    );
+  }
+
+  async function writeLessonCompleted() {
+    await progressWriter.append(
+      buildEvent({ lesson: lessonId, event: "lesson_completed" }),
+    );
+  }
+
+  async function writeFlagLost(beatId: string) {
+    await progressWriter.append(
+      buildEvent({ lesson: lessonId, beat: beatId, event: "flag_lost" }),
+    );
+  }
+
+  // ---------------------------------------------------------------------------
+  // Navigate to a beat index (write beat_viewed, re-render visual)
+  // ---------------------------------------------------------------------------
+
+  async function goToBeat(manifest: LessonManifest, idx: number) {
+    const clamped = clampBeatIndex(idx, manifest.beats.length);
+    currentBeatIndex = clamped;
+    const beat = manifest.beats[clamped];
+    if (beat) await writeBeatViewed(beat.id);
+    await renderCurrentVisual(manifest, clamped);
+  }
+
+  // ---------------------------------------------------------------------------
+  // Transport handlers
+  // ---------------------------------------------------------------------------
+
+  function handleBack() {
+    if (manifestState.phase !== "ready") return;
+    const result = stepBack(currentBeatIndex);
+    if (result.action === "back_to_course") {
+      onBack();
+    } else {
+      void goToBeat(manifestState.manifest, result.index);
+    }
+  }
+
+  async function handleNext() {
+    if (manifestState.phase !== "ready") return;
+    const result = stepNext(currentBeatIndex, manifestState.manifest.beats.length);
+    if (result.action === "lesson_completed") {
+      await writeLessonCompleted();
+      onCompleted(lessonId);
+    } else {
+      void goToBeat(manifestState.manifest, result.index);
+    }
+  }
+
+  /** Called by BeatView when narration audio ends — triggers auto-advance. */
+  function handleBeatComplete() {
+    void handleNext();
+  }
+
+  async function handleFlagLost() {
+    if (manifestState.phase !== "ready") return;
+    const beat = manifestState.manifest.beats[currentBeatIndex];
+    if (beat) await writeFlagLost(beat.id);
+  }
+
+  // ---------------------------------------------------------------------------
+  // Compute starting beat index from resumeFromBeatId or initialBeatIndex
+  // ---------------------------------------------------------------------------
+
+  function computeStartIndex(manifest: LessonManifest): number {
+    if (resumeFromBeatId) {
+      const beatIds = manifest.beats.map((b) => b.id);
+      const resolved = resumeBeatIndex(beatIds, {
+        lessonId,
+        state: "in_progress",
+        lastBeatId: resumeFromBeatId,
+      });
+      // resumeBeatIndex returns 0 for unknown ids; only use if > 0 or explicitly matched
+      const matchIdx = beatIds.indexOf(resumeFromBeatId);
+      if (matchIdx >= 0) return matchIdx;
+    }
+    return clampBeatIndex(initialBeatIndex, manifest.beats.length);
+  }
+
+  // ---------------------------------------------------------------------------
+  // Reactive effects
+  // ---------------------------------------------------------------------------
+
+  // Reload manifest when lessonId or workspacePath changes.
   $effect(() => {
-    // Track dependencies.
     const _lid = lessonId;
-    const _idx = beatIndex;
     const _wp = workspacePath;
-    void loadLesson();
+    void (async () => {
+      await loadManifest();
+      // After loading, jump to the start beat and write lesson_started + beat_viewed.
+      if (manifestState.phase === "ready") {
+        const startIdx = computeStartIndex(manifestState.manifest);
+        currentBeatIndex = startIdx;
+        await writeLessonStarted();
+        const beat = manifestState.manifest.beats[startIdx];
+        if (beat) await writeBeatViewed(beat.id);
+        await renderCurrentVisual(manifestState.manifest, startIdx);
+      }
+    })();
   });
 </script>
 
 <div class="lesson-player">
-  <!-- Back button -->
+  <!-- ── Top bar ──────────────────────────────────────────────────────────── -->
   <div class="top-bar">
-    <button class="btn-back" onclick={onBack}>← Course</button>
-    {#if loadState.phase === "ready"}
-      <span class="lesson-title">{loadState.manifest.title}</span>
+    <button class="btn-ghost btn-back" onclick={handleBack}>← Back</button>
+    {#if manifestState.phase === "ready"}
+      <span class="lesson-title">{manifestState.manifest.title}</span>
+      <span class="beat-counter">
+        {currentBeatIndex + 1} / {manifestState.manifest.beats.length}
+      </span>
     {/if}
   </div>
 
-  {#if loadState.phase === "loading"}
-    <div class="status-center">
-      <p>Loading lesson…</p>
-    </div>
-
-  {:else if loadState.phase === "error"}
-    <div class="status-center status-error">
-      <p>Could not load lesson: {loadState.message}</p>
-      <button class="btn-back" onclick={onBack}>Back to course</button>
-    </div>
-
-  {:else if loadState.phase === "ready"}
-    {@const beat = getNarrationBeat(loadState.manifest, beatIndex)}
-    {#if beat}
-      <NarrationBeatView
-        {beat}
-        sources={loadState.manifest.sources}
-        {workspacePath}
-        renderedHtml={loadState.rendered.kind === "html" ? loadState.rendered.html : ""}
-        visualKind={loadState.rendered.kind}
-        imageUrl={loadState.rendered.kind === "image" ? loadState.rendered.url : ""}
-        imageAlt={loadState.rendered.kind === "image" ? loadState.rendered.alt : ""}
-        audioSrc={convertFileSrc(`${workspacePath}/${beat.audio}`)}
-        {readExcerpt}
-      />
-    {:else}
+  <!-- ── Beat content ─────────────────────────────────────────────────────── -->
+  <div class="beat-content">
+    {#if manifestState.phase === "loading"}
       <div class="status-center">
-        <p>No narration beat at this position.</p>
+        <p>Loading lesson…</p>
       </div>
+
+    {:else if manifestState.phase === "error"}
+      <div class="status-center status-error">
+        <p>Could not load lesson: {manifestState.message}</p>
+        <button class="btn-ghost" onclick={onBack}>Back to course</button>
+      </div>
+
+    {:else if manifestState.phase === "ready"}
+      {@const beat = manifestState.manifest.beats[currentBeatIndex]}
+      {#if beat}
+        <BeatView
+          {beat}
+          sources={manifestState.manifest.sources}
+          {workspacePath}
+          {renderedVisual}
+          audioSrc={beat.type === "narration"
+            ? convertFileSrc(`${workspacePath}/${beat.audio}`)
+            : ""}
+          {readExcerpt}
+          onBeatComplete={handleBeatComplete}
+        />
+      {:else}
+        <div class="status-center">
+          <p>No beat at position {currentBeatIndex}.</p>
+        </div>
+      {/if}
     {/if}
+  </div>
+
+  <!-- ── Transport bar ────────────────────────────────────────────────────── -->
+  {#if manifestState.phase === "ready"}
+    <div class="transport-bar">
+      <div class="transport-left">
+        <button
+          class="btn-transport btn-flag"
+          onclick={handleFlagLost}
+          title="I was lost here — flag this beat"
+          aria-label="Flag: I was lost here"
+        >
+          ? Lost
+        </button>
+      </div>
+
+      <div class="transport-center">
+        <button
+          class="btn-transport btn-back-beat"
+          onclick={handleBack}
+          aria-label="Previous beat"
+        >
+          ← Back
+        </button>
+
+        <button
+          class="btn-transport btn-next-beat"
+          onclick={() => void handleNext()}
+          aria-label="Next beat"
+        >
+          Next →
+        </button>
+      </div>
+
+      <div class="transport-right">
+        <!-- Spacer to balance the left "Lost" button -->
+      </div>
+    </div>
   {/if}
 </div>
 
@@ -242,20 +414,20 @@
     flex-shrink: 0;
   }
 
-  .btn-back {
+  .btn-ghost {
     background: none;
     border: none;
     font-family: inherit;
-    font-size: 0.875rem;
-    color: #555;
     cursor: pointer;
     padding: 0.25rem 0;
     transition: color 0.15s;
-    flex-shrink: 0;
+    color: #555;
   }
+  .btn-ghost:hover { color: #111; }
 
-  .btn-back:hover {
-    color: #111;
+  .btn-back {
+    font-size: 0.875rem;
+    flex-shrink: 0;
   }
 
   .lesson-title {
@@ -265,6 +437,21 @@
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+    flex: 1;
+    min-width: 0;
+  }
+
+  .beat-counter {
+    font-size: 0.8rem;
+    color: #9ca3af;
+    flex-shrink: 0;
+    font-variant-numeric: tabular-nums;
+  }
+
+  /* Beat content area */
+  .beat-content {
+    flex: 1;
+    overflow-y: auto;
   }
 
   /* Status messages */
@@ -278,9 +465,84 @@
     color: #555;
     padding: 2rem;
     text-align: center;
+    min-height: 300px;
   }
 
   .status-error {
     color: #c0392b;
+  }
+
+  /* Transport bar */
+  .transport-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.75rem 1.25rem;
+    background: #fff;
+    border-top: 1px solid #e5e7eb;
+    flex-shrink: 0;
+  }
+
+  .transport-left,
+  .transport-right {
+    min-width: 80px;
+  }
+
+  .transport-right {
+    /* spacer */
+  }
+
+  .transport-center {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+  }
+
+  .btn-transport {
+    font-family: inherit;
+    font-size: 0.875rem;
+    font-weight: 600;
+    padding: 0.5rem 1rem;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background 0.15s, color 0.15s;
+    border: 1px solid #e5e7eb;
+    background: #f9fafb;
+    color: #374151;
+  }
+
+  .btn-transport:hover {
+    background: #f3f4f6;
+    border-color: #9ca3af;
+  }
+
+  .btn-back-beat {
+    /* same as default */
+  }
+
+  .btn-next-beat {
+    background: #3b82f6;
+    color: #fff;
+    border-color: #3b82f6;
+  }
+
+  .btn-next-beat:hover {
+    background: #2563eb;
+    border-color: #2563eb;
+  }
+
+  .btn-flag {
+    background: none;
+    border-color: transparent;
+    color: #9ca3af;
+    font-size: 0.8rem;
+    font-weight: 500;
+    padding: 0.4rem 0.6rem;
+  }
+
+  .btn-flag:hover {
+    color: #ef4444;
+    background: #fef2f2;
+    border-color: #fca5a5;
   }
 </style>

@@ -22,13 +22,19 @@
     course: CourseManifest;
     lessons: LessonValidation[];
     progress: CourseProgress;
-    /** Called with lesson_id when the learner clicks "Launch".  Hook for 005/006. */
+    /** Called with lesson_id when the learner clicks "Launch" or "Resume". */
     onLaunch: (lessonId: string) => void;
     /** Called when the learner clicks "Open Different Folder". */
     onClose: () => void;
+    /**
+     * Lesson_id to highlight after a lesson_completed event (DECISIONS §5).
+     * The highlighted lesson has a visual affordance nudging the learner to
+     * start it next.  Null when no highlight is active.
+     */
+    highlightedLessonId?: string | null;
   }
 
-  let { course, lessons, progress, onLaunch, onClose }: Props = $props();
+  let { course, lessons, progress, onLaunch, onClose, highlightedLessonId = null }: Props = $props();
 
   const summary = $derived(completionSummary(progress));
 </script>
@@ -83,7 +89,11 @@
         {@const ref = course.lessons.find((l) => l.lesson_id === lesson.lessonId)}
         {@const lessonProgress = progress.lessons.get(lesson.lessonId)}
 
-        <li class="lesson-item" class:lesson-item--not-launchable={!lesson.launchable}>
+        <li
+          class="lesson-item"
+          class:lesson-item--not-launchable={!lesson.launchable}
+          class:lesson-item--highlighted={lesson.lessonId === highlightedLessonId}
+        >
           <div class="lesson-info">
             <div class="lesson-title-row">
               <span class="lesson-title">{lesson.title}</span>
@@ -262,6 +272,12 @@
   .lesson-item--not-launchable {
     opacity: 0.7;
     background: #fafafa;
+  }
+
+  .lesson-item--highlighted {
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2);
+    background: #eff6ff;
   }
 
   .lesson-info {
