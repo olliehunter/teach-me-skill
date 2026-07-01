@@ -5,18 +5,19 @@
    * State machine (see quiz.ts → QuizPhase):
    *   "intro"    — audio_intro plays; prompt + options shown; submit disabled.
    *   "awaiting" — intro finished; learner selects an option and submits.
-   *   "revealed" — answer submitted; correct option highlighted; audio_explanation plays.
-   *   "complete" — audio_explanation ended; onBeatComplete called once.
+   *   "revealed" — answer submitted; correct option highlighted; the matching
+   *                feedback clip plays (audio_correct or audio_incorrect).
+   *   "complete" — feedback audio ended; onBeatComplete called once.
    *
    * Audio:
-   *   Both audio files load via the Tauri asset protocol (convertFileSrc).
+   *   All audio files load via the Tauri asset protocol (convertFileSrc).
    *   Because Vitest runs headlessly, all audio calls are wrapped in try/catch.
    *
    * Props:
    *   beat          — the QuizBeat to display.
    *   sources       — lesson sources array (for citation chips).
    *   workspacePath — absolute workspace root (used to build asset-protocol URLs).
-   *   onBeatComplete — called once, after audio_explanation ends (triggers auto-advance).
+   *   onBeatComplete — called once, after the feedback clip ends (triggers auto-advance).
    *   onQuizAnswer  — called with (chosen, correct) so LessonPlayer can write the
    *                   quiz_answer progress event.  Fired immediately on submit, before
    *                   the explanation audio starts.
@@ -27,7 +28,7 @@
   import CitationChips from "./CitationChips.svelte";
   import SourcePanel from "./SourcePanel.svelte";
   import { resolveCitations } from "./citations.js";
-  import { gradeAnswer, nextQuizPhase } from "./quiz.js";
+  import { gradeAnswer, nextQuizPhase, selectQuizFeedback } from "./quiz.js";
   import type { QuizPhase } from "./quiz.js";
   import type { QuizBeat, Source } from "./types.js";
 
@@ -59,7 +60,6 @@
   // ---------------------------------------------------------------------------
 
   const introSrc = $derived(convertFileSrc(`${workspacePath}/${beat.audio_intro}`));
-  const explainSrc = $derived(convertFileSrc(`${workspacePath}/${beat.audio_explanation}`));
 
   // ---------------------------------------------------------------------------
   // Quiz state
@@ -72,22 +72,27 @@
   let multiSelected = $state<Set<string>>(new Set());
   /** Whether onBeatComplete has been called (guard against double-fire). */
   let completed = $state(false);
+  /** Set at submit: true if the learner's answer was correct; null before submit. */
+  let answeredCorrect = $state<boolean | null>(null);
 
-  // Derived grading result (only meaningful in "revealed" phase)
-  const isCorrect = $derived(
-    phase === "revealed" || phase === "complete"
-      ? selectedId !== null
-        ? gradeAnswer(beat, selectedId)
-        : false
-      : false,
+  // Feedback text + which clip to play, chosen by correctness after submit.
+  // audio_correct on a right answer, audio_incorrect on a wrong one.
+  const feedback = $derived(
+    answeredCorrect === null ? null : selectQuizFeedback(beat, answeredCorrect),
   );
+  const feedbackSrc = $derived(
+    feedback && feedback.audio
+      ? convertFileSrc(`${workspacePath}/${feedback.audio}`)
+      : "",
+  );
+  const isCorrect = $derived(answeredCorrect === true);
 
   // ---------------------------------------------------------------------------
   // Audio element refs
   // ---------------------------------------------------------------------------
 
   let introAudioEl = $state<HTMLAudioElement | undefined>();
-  let explainAudioEl = $state<HTMLAudioElement | undefined>();
+  let feedbackAudioEl = $state<HTMLAudioElement | undefined>();
 
   // ---------------------------------------------------------------------------
   // Play intro on mount
@@ -108,8 +113,8 @@
     phase = nextQuizPhase(phase, "intro_ended");
   }
 
-  function handleExplanationEnded() {
-    phase = nextQuizPhase(phase, "explanation_ended");
+  function handleFeedbackEnded() {
+    phase = nextQuizPhase(phase, "feedback_ended");
     if (!completed) {
       completed = true;
       onBeatComplete();
@@ -149,14 +154,16 @@
     if (!chosen) return;
 
     const correct = gradeAnswer(beat, chosen);
+    answeredCorrect = correct;
     onQuizAnswer(chosen, correct);
     phase = nextQuizPhase(phase, "answer_submitted");
 
-    // Start explanation audio after a short tick so DOM updates first.
+    // Start the matching feedback clip after a short tick so the <audio>
+    // element (with the correct/incorrect src) is in the DOM first.
     setTimeout(() => {
-      explainAudioEl?.play().catch(() => {
+      feedbackAudioEl?.play().catch(() => {
         // Headless — auto-advance immediately
-        handleExplanationEnded();
+        handleFeedbackEnded();
       });
     }, 0);
   }
@@ -223,9 +230,9 @@
 
 {#if phase === "revealed" || phase === "complete"}
   <audio
-    bind:this={explainAudioEl}
-    src={explainSrc}
-    onended={handleExplanationEnded}
+    bind:this={feedbackAudioEl}
+    src={feedbackSrc}
+    onended={handleFeedbackEnded}
     aria-hidden="true"
   ></audio>
 {/if}
@@ -295,7 +302,7 @@
     >
       <span class="feedback-icon" aria-hidden="true">{isCorrect ? "✓" : "✗"}</span>
       <span class="feedback-label">{isCorrect ? "Correct!" : "Not quite."}</span>
-      <p class="feedback-explanation">{beat.explanation}</p>
+      <p class="feedback-explanation">{feedback?.text ?? ""}</p>
     </div>
   {/if}
 

@@ -95,9 +95,20 @@ export interface QuizBeat {
   prompt: string;
   options: QuizOption[];
   answer: string;             // option id
-  explanation: string;
-  audio_explanation: string;  // workspace-relative path
+  /** Feedback shown + spoken when the learner picks the correct answer. */
+  correct_feedback: string;
+  audio_correct: string;      // workspace-relative path
+  /**
+   * Feedback shown + spoken for any wrong choice. Per the schema this is the
+   * real teaching moment: it names and justifies the correct answer.
+   */
+  incorrect_feedback: string;
+  audio_incorrect: string;    // workspace-relative path
   citations: string[];
+  /** @deprecated pre-split schema — kept optional so older courses still play. */
+  explanation?: string;
+  /** @deprecated pre-split schema — superseded by audio_correct/audio_incorrect. */
+  audio_explanation?: string;
 }
 
 export interface ContestPosition {

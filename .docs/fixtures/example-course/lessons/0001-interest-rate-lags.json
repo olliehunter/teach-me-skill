@@ -92,8 +92,10 @@
         }
       ],
       "answer": "a",
-      "explanation": "Right. Because contracts, loans, wages and prices adjust slowly, the full effect arrives only after long and variable lags.",
-      "audio_explanation": "assets/audio/0001-b4-explain.wav",
+      "correct_feedback": "Right. Because contracts, loans, wages and prices adjust slowly, the full effect of a rate change arrives only after long and variable lags.",
+      "audio_correct": "assets/audio/0001-b4-correct.wav",
+      "incorrect_feedback": "Not quite. The answer is that loans, wages and prices all adjust only gradually — a rate change works through the economy with a time lag, so its full effect lands only after long and variable delays.",
+      "audio_incorrect": "assets/audio/0001-b4-incorrect.wav",
       "citations": [
         "s1"
       ]

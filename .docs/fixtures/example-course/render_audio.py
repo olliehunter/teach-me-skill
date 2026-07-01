@@ -6,7 +6,8 @@ Run inside a kokoro-onnx venv:
 
 For each beat it renders and patches durations back into the lesson JSON:
   - narration beats  -> beat["audio"]                    (+ audio_duration_s)
-  - quiz beats       -> beat["audio_intro"], beat["audio_explanation"]
+  - quiz beats       -> beat["audio_intro"], beat["audio_correct"], beat["audio_incorrect"]
+                        (falls back to beat["audio_explanation"] for pre-split courses)
   - contested beats  -> beat["audio_intro"] + each position's audio (+ audio_duration_s)
 Audio is written under <workspace>/assets/audio/. Voice comes from the lesson's voice config.
 
@@ -77,6 +78,12 @@ def main(lesson_path: str) -> None:
         elif btype == "quiz":
             if beat.get("narration_intro") and beat.get("audio_intro"):
                 render(kokoro, voice, lang, speed, beat["narration_intro"], root / beat["audio_intro"])
+            # New split feedback clips: correct + incorrect.
+            if beat.get("correct_feedback") and beat.get("audio_correct"):
+                render(kokoro, voice, lang, speed, beat["correct_feedback"], root / beat["audio_correct"])
+            if beat.get("incorrect_feedback") and beat.get("audio_incorrect"):
+                render(kokoro, voice, lang, speed, beat["incorrect_feedback"], root / beat["audio_incorrect"])
+            # Back-compat: pre-split single explanation clip.
             if beat.get("explanation") and beat.get("audio_explanation"):
                 render(kokoro, voice, lang, speed, beat["explanation"], root / beat["audio_explanation"])
         elif btype == "contested":

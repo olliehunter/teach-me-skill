@@ -99,7 +99,19 @@ def validate_lesson(root: Path, path: Path, require_audio: bool):
             if lengths and (max(lengths) - min(lengths)) > 18:
                 warn(f"{tag}: option lengths vary by {max(lengths)-min(lengths)} chars — may leak the answer")
             check_audio(root, tag + ":intro", b.get("audio_intro"), require_audio, None)
-            check_audio(root, tag + ":explain", b.get("audio_explanation"), require_audio, None)
+            # New split feedback: play audio_correct on a right answer, audio_incorrect
+            # on a wrong one. The incorrect clip is the real teaching moment, so it must
+            # exist and name/justify the correct answer.
+            if b.get("audio_correct") or b.get("audio_incorrect"):
+                check_audio(root, tag + ":correct", b.get("audio_correct"), require_audio, None)
+                check_audio(root, tag + ":incorrect", b.get("audio_incorrect"), require_audio, None)
+                if not b.get("incorrect_feedback"):
+                    err(f"{tag}: quiz missing incorrect_feedback (the incorrect clip must name and justify the answer)")
+            elif b.get("audio_explanation"):
+                # Back-compat: pre-split single explanation clip.
+                check_audio(root, tag + ":explain", b.get("audio_explanation"), require_audio, None)
+            else:
+                err(f"{tag}: quiz missing feedback audio (audio_correct/audio_incorrect)")
 
         elif b["type"] == "contested":
             positions = b.get("positions", [])

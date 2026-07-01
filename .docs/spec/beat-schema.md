@@ -120,13 +120,15 @@ Extends Matt Pocock's `teach` structure (additions marked **+**):
     { "id": "c", "text": "Prices are fixed by law for a set period each year" }
   ],
   "answer": "a",
-  "explanation": "Correct — transmission through wages, loans and prices takes months.",
-  "audio_explanation": "assets/audio/0002-b4-explain.wav",
+  "correct_feedback": "Exactly — transmission through wages, loans and prices takes months.",
+  "audio_correct": "assets/audio/0002-b4-correct.wav",
+  "incorrect_feedback": "Not quite. The answer is that policy works through the economy with a time lag — wages, loans and prices adjust only over months, which is why the effect isn't immediate.",
+  "audio_incorrect": "assets/audio/0002-b4-incorrect.wav",
   "citations": ["s1"]
 }
 ```
 
-`format` ∈ `single_choice | multi_choice | true_false` for v1. **Authoring rule (Matt):** all options should be near-identical in length/word-count so formatting leaks no clue to the answer. `audio_intro`/`audio_explanation` are pre-rendered so the tutor voice speaks quiz framing too; the chosen-answer feedback is spoken live by the tutor path.
+`format` ∈ `single_choice | multi_choice | true_false` for v1. **Authoring rule (Matt):** all options should be near-identical in length/word-count so formatting leaks no clue to the answer. The player plays **`audio_correct`** when the learner picks `answer`, and **`audio_incorrect`** for any wrong choice — so `incorrect_feedback` is the real teaching moment: it must state the correct answer *and* briefly say why it's right. All three clips (`audio_intro`, `audio_correct`, `audio_incorrect`) are pre-rendered.
 
 ### Contested beat
 
@@ -191,7 +193,7 @@ The answer is returned as text, spoken live via Kokoro in the course voice, and 
 
 ## What the skill must guarantee on output
 
-1. Every `audio` / `audio_intro` / `audio_explanation` path exists and matches `audio_duration_s` (±0.3s).
+1. Every audio path (`audio`, `audio_intro`, `audio_correct`, `audio_incorrect`) exists and, where a duration is declared, matches `audio_duration_s` (±0.3s).
 2. Every `visual.src` exists; every `citations` ID resolves in `sources`; every source has a reachable `excerpt_ref`, a `tier` of 1 or 2, and a `trust_rationale`.
 3. Narration beats stay within the ~10–30s target; a lesson stays short (Matt: respect working memory).
 4. Every contested beat has ≥2 positions, each independently cited.

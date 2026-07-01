@@ -5,7 +5,12 @@
  */
 
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
-import { gradeAnswer, buildQuizAnswerEvent, nextQuizPhase } from "./quiz.js";
+import {
+  gradeAnswer,
+  buildQuizAnswerEvent,
+  nextQuizPhase,
+  selectQuizFeedback,
+} from "./quiz.js";
 import type { QuizBeat } from "./types.js";
 
 // ---------------------------------------------------------------------------
@@ -25,9 +30,12 @@ const FIXTURE_BEAT: QuizBeat = {
     { id: "c", text: "Prices are reset by the government once each year" },
   ],
   answer: "a",
-  explanation:
+  correct_feedback:
     "Right. Because contracts, loans, wages and prices adjust slowly, the full effect arrives only after long and variable lags.",
-  audio_explanation: "assets/audio/0001-b4-explain.wav",
+  audio_correct: "assets/audio/0001-b4-correct.wav",
+  incorrect_feedback:
+    "Not quite. The answer is that loans, wages and prices all adjust only gradually, so the full effect of a rate change lands only after long and variable lags.",
+  audio_incorrect: "assets/audio/0001-b4-incorrect.wav",
   citations: ["s1"],
 };
 
@@ -130,16 +138,16 @@ describe("nextQuizPhase", () => {
     expect(nextQuizPhase("awaiting", "answer_submitted")).toBe("revealed");
   });
 
-  it("revealed → complete on explanation_ended", () => {
-    expect(nextQuizPhase("revealed", "explanation_ended")).toBe("complete");
+  it("revealed → complete on feedback_ended", () => {
+    expect(nextQuizPhase("revealed", "feedback_ended")).toBe("complete");
   });
 
   it("intro is unchanged by answer_submitted (guard)", () => {
     expect(nextQuizPhase("intro", "answer_submitted")).toBe("intro");
   });
 
-  it("intro is unchanged by explanation_ended (guard)", () => {
-    expect(nextQuizPhase("intro", "explanation_ended")).toBe("intro");
+  it("intro is unchanged by feedback_ended (guard)", () => {
+    expect(nextQuizPhase("intro", "feedback_ended")).toBe("intro");
   });
 
   it("awaiting is unchanged by intro_ended (guard — double-fire)", () => {
@@ -157,7 +165,67 @@ describe("nextQuizPhase", () => {
   it("complete is unchanged by any action", () => {
     expect(nextQuizPhase("complete", "intro_ended")).toBe("complete");
     expect(nextQuizPhase("complete", "answer_submitted")).toBe("complete");
-    expect(nextQuizPhase("complete", "explanation_ended")).toBe("complete");
+    expect(nextQuizPhase("complete", "feedback_ended")).toBe("complete");
+  });
+});
+
+// ---------------------------------------------------------------------------
+// selectQuizFeedback — correct vs incorrect path
+// ---------------------------------------------------------------------------
+
+describe("selectQuizFeedback", () => {
+  it("returns the correct clip + text on a right answer", () => {
+    expect(selectQuizFeedback(FIXTURE_BEAT, true)).toEqual({
+      text: FIXTURE_BEAT.correct_feedback,
+      audio: "assets/audio/0001-b4-correct.wav",
+    });
+  });
+
+  it("returns the incorrect clip + text on a wrong answer", () => {
+    expect(selectQuizFeedback(FIXTURE_BEAT, false)).toEqual({
+      text: FIXTURE_BEAT.incorrect_feedback,
+      audio: "assets/audio/0001-b4-incorrect.wav",
+    });
+  });
+
+  it("the incorrect path is distinct from the correct path (real teaching moment)", () => {
+    const right = selectQuizFeedback(FIXTURE_BEAT, true);
+    const wrong = selectQuizFeedback(FIXTURE_BEAT, false);
+    expect(wrong.audio).not.toBe(right.audio);
+    expect(wrong.text).not.toBe(right.text);
+  });
+
+  it("falls back to the pre-split explanation/audio_explanation for older courses", () => {
+    // A course authored before the split has only explanation/audio_explanation.
+    const legacy = {
+      ...FIXTURE_BEAT,
+      correct_feedback: undefined,
+      audio_correct: undefined,
+      incorrect_feedback: undefined,
+      audio_incorrect: undefined,
+      explanation: "Legacy single explanation.",
+      audio_explanation: "assets/audio/0001-b4-explain.wav",
+    } as unknown as QuizBeat;
+    expect(selectQuizFeedback(legacy, true)).toEqual({
+      text: "Legacy single explanation.",
+      audio: "assets/audio/0001-b4-explain.wav",
+    });
+    expect(selectQuizFeedback(legacy, false)).toEqual({
+      text: "Legacy single explanation.",
+      audio: "assets/audio/0001-b4-explain.wav",
+    });
+  });
+
+  it("resolves to empty strings when no feedback fields are present (no crash)", () => {
+    const bare = {
+      ...FIXTURE_BEAT,
+      correct_feedback: undefined,
+      audio_correct: undefined,
+      incorrect_feedback: undefined,
+      audio_incorrect: undefined,
+    } as unknown as QuizBeat;
+    expect(selectQuizFeedback(bare, true)).toEqual({ text: "", audio: "" });
+    expect(selectQuizFeedback(bare, false)).toEqual({ text: "", audio: "" });
   });
 });
 
