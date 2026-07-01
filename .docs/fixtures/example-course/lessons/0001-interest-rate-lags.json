@@ -7,7 +7,12 @@
   "objective": "Explain what the base rate is and why a change in it acts on the economy only after long and variable lags.",
   "prerequisites": [],
   "estimated_seconds": 95,
-  "voice": { "engine": "kokoro", "lang_code": "a", "voice": "af_heart", "speed": 1.0 },
+  "voice": {
+    "engine": "kokoro",
+    "lang_code": "a",
+    "voice": "af_heart",
+    "speed": 1.0
+  },
   "sources": [
     {
       "id": "s1",
@@ -25,27 +30,45 @@
       "type": "narration",
       "narration": "Let's start with the base rate. It's the interest rate a central bank, like the Bank of England, pays to commercial banks. It sets the floor that everyone else's rates are built on.",
       "audio": "assets/audio/0001-b1.wav",
-      "audio_duration_s": null,
-      "visual": { "kind": "svg_file", "src": "assets/visuals/0001-b1.svg", "alt": "Base rate sits beneath the rates banks charge households and businesses" },
-      "citations": ["s1"]
+      "audio_duration_s": 10.65,
+      "visual": {
+        "kind": "svg_file",
+        "src": "assets/visuals/0001-b1.svg",
+        "alt": "Base rate sits beneath the rates banks charge households and businesses"
+      },
+      "citations": [
+        "s1"
+      ]
     },
     {
       "id": "b2",
       "type": "narration",
       "narration": "When the central bank raises the base rate, borrowing becomes more expensive. So households and businesses borrow and spend a little less. That gentle cooling of demand is the main lever used to bring inflation down.",
       "audio": "assets/audio/0001-b2.wav",
-      "audio_duration_s": null,
-      "visual": { "kind": "svg_file", "src": "assets/visuals/0001-b2.svg", "alt": "A higher rate pushing the demand curve downward" },
-      "citations": ["s1"]
+      "audio_duration_s": 13.27,
+      "visual": {
+        "kind": "svg_file",
+        "src": "assets/visuals/0001-b2.svg",
+        "alt": "A higher rate pushing the demand curve downward"
+      },
+      "citations": [
+        "s1"
+      ]
     },
     {
       "id": "b3",
       "type": "narration",
       "narration": "But the effect is not instant. Loans, wages and prices only adjust gradually, so a rate change today can take one to two years to fully bite. Economists call these long and variable lags.",
       "audio": "assets/audio/0001-b3.wav",
-      "audio_duration_s": null,
-      "visual": { "kind": "svg_file", "src": "assets/visuals/0001-b3.svg", "alt": "A timeline showing the effect of a rate change building over about two years" },
-      "citations": ["s1"]
+      "audio_duration_s": 12.97,
+      "visual": {
+        "kind": "svg_file",
+        "src": "assets/visuals/0001-b3.svg",
+        "alt": "A timeline showing the effect of a rate change building over about two years"
+      },
+      "citations": [
+        "s1"
+      ]
     },
     {
       "id": "b4",
@@ -55,14 +78,25 @@
       "audio_intro": "assets/audio/0001-b4-intro.wav",
       "prompt": "Why don't rate changes move prices straight away?",
       "options": [
-        { "id": "a", "text": "Loans, wages and prices all adjust only gradually" },
-        { "id": "b", "text": "Banks are legally required to wait a fixed period" },
-        { "id": "c", "text": "Prices are reset by the government once each year" }
+        {
+          "id": "a",
+          "text": "Loans, wages and prices all adjust only gradually"
+        },
+        {
+          "id": "b",
+          "text": "Banks are legally required to wait a fixed period"
+        },
+        {
+          "id": "c",
+          "text": "Prices are reset by the government once each year"
+        }
       ],
       "answer": "a",
       "explanation": "Right. Because contracts, loans, wages and prices adjust slowly, the full effect arrives only after long and variable lags.",
       "audio_explanation": "assets/audio/0001-b4-explain.wav",
-      "citations": ["s1"]
+      "citations": [
+        "s1"
+      ]
     }
   ],
   "created": "2026-06-30T10:00:00Z",

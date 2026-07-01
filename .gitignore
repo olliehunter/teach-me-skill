@@ -17,6 +17,7 @@ __pycache__/
 *.pyc
 .build-venv/
 .venv/
+.venv-*/
 venv/
 
 # Sidecar model resources (large, downloaded at build time)
